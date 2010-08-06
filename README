@@ -12,6 +12,7 @@ This behavior permits to attach tags to Doctrine objects. It includes tag-clouds
  * tag cloud generation
  * related tags handling
  * unit-tested for model
+ * Provides partial to replace "dumb" tag field widgets in Symfony forms with a user-friendly jQuery-enhanced version
  * [machine tags](http://www.flickr.com/groups/api/discuss/72157594497877875/) support (also called "triple tags")
  * jQuery-based typeahead for tags (optional)
  * easy tags fixtures loading NOT YET
@@ -33,7 +34,7 @@ The following MySQL command will clean this up:
         trim(replace((select name from tag where tag.id = tag_id), 
       char(160), ' ')));
 
-## Philosophy of the stuff ##
+## Philosophy ##
 
  * taggable models must have a primary key
  * tags are saved when the object is saved, not before
@@ -333,7 +334,15 @@ In case you want to display a long list of taggable objects with their associate
       var_dump($post-getTags());
     }
 
+### The Tag Widget Renderer ###
+
+If you have a Symfony form with a 'tags' field, just replace your `$form['tags']->render()` call with this to get an attractive and user friendly widget for managing the list of tags:
+
+    <?php include_component('taggableComplete','tagWidget', array('object' => $form->getObject())) ?>
+
 ### Typeahead ###
+
+Typeahead support works but we now recommend using the tag widget renderer instead (see above).
 
 Tag typeahead support allows users to complete the current tag by pressing
 the tab key, which picks what the plugin believes to be the most likely
