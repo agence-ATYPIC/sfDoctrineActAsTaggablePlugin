@@ -3,7 +3,7 @@
 <div class="assigned-tags">
   <h5>Tags</h5>
 	<?php if (count($object->getTags())): ?>
-		<ul>
+		<ul class="a-ui">
 			<?php foreach ($object->getTags() as $tag): ?>
 				<li>
 				<span><?php echo $tag ?></span>
@@ -36,7 +36,7 @@
 <?php if (count($popular_tags)): ?>
 	<div class="popular-tags">
 	  <h5>Popular Tags</h5>
-	  <ul>
+	  <ul class="a-ui">
 	    <?php $n=1; foreach ($popular_tags as $tag => $count): ?>
 				<li>
 					<?php echo jq_link_to_remote($tag, array(
