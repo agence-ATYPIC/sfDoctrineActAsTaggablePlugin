@@ -24,7 +24,7 @@
 	<?php echo jq_form_remote_tag(array(
 		'url' => url_for('taggable_add_tag', array('object_id' => $object->id, 'object_class' => get_class($object))),
 		'complete' => '$(".assigned-tags").parent().html(XMLHttpRequest.responseText); $("#taggable-add-tag-form input.add-text").focus();',
-	), array('id' => 'taggable-add-tag-form', )) ?>
+	), array('id' => 'taggable-add-tag-form', 'class' => 'a-ui')) ?>
 	<input class="add-text tag-input" name="tags" type="text" />
 	<input type="submit" class="a-btn icon a-submit a-add" value="Add" />
 	<div class="add-tags-help">
