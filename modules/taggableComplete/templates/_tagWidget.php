@@ -11,7 +11,7 @@
 					'url' => url_for('taggable_remove_tag', array('object_id' => $object->id, 'object_class' => get_class($object), 'tags' => $tag)),
 					'complete' => '$(".assigned-tags").parent().html(XMLHttpRequest.responseText);'
 					), array(
-						'class' => 'a-btn icon a-close-small no-label nobg',
+						'class' => 'a-btn icon a-close-small no-label no-bg',
 						'title' => 'Remove "'.$tag.'"', 
 					))?>
 			</li>
