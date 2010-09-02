@@ -157,7 +157,6 @@ function aInlineTaggableWidget(selector, options)
 		tagInput.parent().append(addButton);
 
 
-
 		// Add a list of popular tags to be added
 		function addTagsToForm(link)
 		{
@@ -186,6 +185,14 @@ function aInlineTaggableWidget(selector, options)
 			tagInput.val(value);
 			
 			link.remove();
+			
+			if (typeof(popularTags[tag]) != 'undefined')
+			{
+				var linkLabel = tag + ' - ' + popularTags[tag];
+				var new_link = makeLink(existingTagsAttributes, tag, linkLabel);
+				new_link.bind('click', function() { addTagsToForm($(this)); return false; });
+				popularsDiv.append(new_link);
+			}
 		}
 
 
@@ -237,13 +244,23 @@ function aInlineTaggableWidget(selector, options)
 			tagInput.val(value);
 			typeAheadBox.val('');
 			
+			existingTags = {};
+			var lp = value.split(',');
+			for (x in lp)
+			{
+				existingTags[lp[x]] = lp[x];
+			}
+			
+			existingDiv.html(makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove').html());
+			existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this)); return false; });
+			
 			return false;
 		}
 		addButton.bind('click', function() { commitTagsToForm(); return false; });
 	
 
 		existingDiv = makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove');
-		tagInput.parent().append(existingDiv);
+		tagInput.parent().prepend(existingDiv);
 		
 		popularsDiv = makeTagContainer('Popular Tags', popularTags, popularsAttributes, 'add');
 		tagInput.parent().append(popularsDiv);
@@ -254,6 +271,32 @@ function aInlineTaggableWidget(selector, options)
 			{
 				multiple: true
 			});
+			
+
+		// Catch that enter key, baby!
+		$(document).keyup(function(e)
+			{
+				if (e.keyCode == 13)
+				{
+					e.preventDefault();
+				}
+			});
+		
+		$(document).keypress(function(e)
+			{
+				if (e.keyCode == 13)
+				{
+					e.preventDefault();
+				}
+			});
+		
+		typeAheadBox.keyup(function(e)
+			{
+		 		if (e.keyCode == 13)
+		 		{
+		 			commitTagsToForm();
+		 		}
+		 	});
 	});	
 	
 }
