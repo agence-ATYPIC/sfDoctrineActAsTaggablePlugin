@@ -109,3 +109,151 @@ function pkTagahead(tagaheadUrl)
   });
 }
 
+
+function aInlineTaggableWidget(selector, options)
+{
+	var typeaheadUrl = options['typeahead-url'];
+	
+	
+	function makeLink(attributes, title, text)
+	{
+		var new_link = $('<a />');
+		new_link.attr(attributes);
+		new_link.attr('title', title);
+		new_link.text(text);
+		
+		return new_link;
+	}
+	
+	function trimExcessCommas(string)
+	{
+		string = string.replace(/(^,)|(, ?$)/g, '');
+		string = string.replace(/(,,)|(, ,)/, ',');
+		string = $.trim(string);
+		
+		return string;
+	}	
+
+	$(selector).each(function()
+	{	
+		var popularTags = options['popular-tags'];
+		var existingTags = options['existing-tags'];
+		var popularsAttributes = {};
+		var existingTagsAttributes = {};
+		var existingDiv = $('<div />');
+		var popularsDiv = $('<div />');
+
+		// Establish the quick enhancement
+		var tagInput = $(this);
+		var typeAheadBox = $('<input />');
+		typeAheadBox.attr('type', 'text');
+		
+		var addButton = $('<a />');
+		addButton.text('Add');
+		addButton.attr({'href' : '#', 'class' : 'add-tags-link', 'title' : 'Add these tags'});
+
+		tagInput.hide();
+		tagInput.parent().append(typeAheadBox);
+		tagInput.parent().append(addButton);
+
+
+
+		// Add a list of popular tags to be added
+		function addTagsToForm(link)
+		{
+			tag = link.attr('title');
+			
+			var value = tagInput.val() + ', ' + tag;
+			value = trimExcessCommas(value);
+			tagInput.val(value);
+			
+			link.remove();
+
+			var new_link = makeLink(existingTagsAttributes, tag, 'x ' + tag);
+			new_link.bind('click', function() { removeTagsFromForm($(this)); return false; });
+			existingDiv.append(new_link);
+		}
+		
+		
+		// Add a list of tags that may be removed
+		function removeTagsFromForm(link)
+		{
+			tag = link.attr('title');
+			var value = tagInput.val();
+			
+			value = value.replace(tag, '');
+			value = trimExcessCommas(value);
+			tagInput.val(value);
+			
+			link.remove();
+		}
+
+
+		// a maker function for tag containers
+		function makeTagContainer(containerLabel, tagArray, linkAttributes, linkLabelType)
+		{
+			// Add a list of tags that may be removed
+			var tagContainer = $('<div />');
+			tagContainer.addClass('a-inline-taggable-widget-tag-container');
+			var header = $('<h1 />');
+			header.text(containerLabel);
+			tagContainer.append(header);
+		
+			var attributes = {};
+			for (x in tagArray)
+			{
+				var linkLabel = '';
+				if (linkLabelType == 'add')
+				{
+					linkLabel = x + ' - ' + tagArray[x];
+				}
+				else if (linkLabelType == 'remove')
+				{
+					linkLabel = 'x ' + x;
+				}
+				
+				var new_link = makeLink(linkAttributes, x, linkLabel);
+				
+				if (linkLabelType == 'add')
+				{
+					new_link.bind('click', function() { addTagsToForm($(this));  return false; });
+				}
+				else if (linkLabelType == 'remove')
+				{
+					new_link.bind('click', function() { removeTagsFromForm($(this));  return false; });
+				}
+				
+				tagContainer.append(new_link);
+			}
+			return tagContainer;
+		}
+
+		// Add the new tags to the existing form input.
+		// If the user doesn't click Save changes or add... tough?
+		function commitTagsToForm()
+		{
+			var value = tagInput.val() + ',' + typeAheadBox.val();
+			value = trimExcessCommas(value);
+			tagInput.val(value);
+			typeAheadBox.val('');
+			
+			return false;
+		}
+		addButton.bind('click', function() { commitTagsToForm(); return false; });
+	
+
+		existingDiv = makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove');
+		tagInput.parent().append(existingDiv);
+		
+		popularsDiv = makeTagContainer('Popular Tags', popularTags, popularsAttributes, 'add');
+		tagInput.parent().append(popularsDiv);
+
+
+		// TypeAhead
+		typeAheadBox.autocomplete(typeaheadUrl,
+			{
+				multiple: true
+			});
+	});	
+	
+}

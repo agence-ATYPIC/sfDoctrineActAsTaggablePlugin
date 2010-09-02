@@ -25,7 +25,15 @@ class taggableCompleteActions extends sfActions
   public function executeComplete()
   {
     $this->setLayout(false);
-    $current = $this->getRequestParameter('current');
+    $current = '';
+    if ($this->getRequestParameter('q'))
+    {
+    	$current = $this->getRequestParameter('q');
+    }
+    else
+    {
+    	$current = $this->getRequestParameter('current');
+    }
     $tags = array();
     $tagsInfo = array();
     $tagsAll = array();
@@ -81,6 +89,11 @@ class taggableCompleteActions extends sfActions
       $all .= $tagInfo['name'];
       $all .= $tagInfo['right'];
       $n++;
+    }
+    
+    if ($this->hasRequestParameter('q'))
+    {
+    	$this->setTemplate('jQueryAutoComplete');
     }
   }
 
