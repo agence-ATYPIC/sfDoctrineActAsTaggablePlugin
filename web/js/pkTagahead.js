@@ -115,14 +115,30 @@ function aInlineTaggableWidget(selector, options)
 	var typeaheadUrl = options['typeahead-url'];
 	
 	
-	function makeLink(attributes, title, text)
+	function makePopularLink(attributes, title, text)
 	{
+		var new_tag = $('<span />');
 		var new_link = $('<a />');
+		new_tag.html("<span>"+text+"</span>");
+		new_tag.attr({ class: 'a-tag a-popular', title: title });
+		new_tag.prepend(new_link);
+		new_link.text(title);
 		new_link.attr(attributes);
-		new_link.attr('title', title);
-		new_link.text(text);
-		
-		return new_link;
+		return new_tag;
+	}
+
+	function makeRemoveLink(attributes, title, text)
+	{
+		var new_tag = $('<span />');
+		var new_link = $('<a />');
+		new_tag.html("<span>"+title+"</span>");
+		new_tag.attr({ class:'a-tag' , title: title });
+		new_link.text('Remove Tag');
+		new_link.attr(attributes);
+		new_link.attr({ class: 'a-btn icon a-close-small no-label no-bg', title: 'Remove' });
+		new_link.prepend('<span class="icon"></span>');
+		new_tag.append(new_link);
+		return new_tag;
 	}
 	
 	function trimExcessCommas(string)
@@ -162,7 +178,7 @@ function aInlineTaggableWidget(selector, options)
 		
 		var addButton = $('<a />');
 		addButton.text('Add');
-		addButton.attr({'href' : '#', 'class' : 'add-tags-link', 'title' : 'Add these tags'});
+		addButton.attr({'href' : '#', 'class' : 'a-btn icon a-add add-tags-link', 'title' : 'Add these tags'});
 
 		tagInput.hide();
 		tagInput.parent().append(typeAheadBox);
@@ -172,15 +188,15 @@ function aInlineTaggableWidget(selector, options)
 		// Add a list of popular tags to be added
 		function addTagsToForm(link)
 		{
-			tag = link.attr('title');
-			
+			var tag = link.attr('title');
 			var value = tagInput.val() + ', ' + tag;
+
 			value = trimExcessCommas(value);
 			tagInput.val(value);
 			
 			link.remove();
 
-			var new_link = makeLink(existingTagsAttributes, tag, 'x ' + tag);
+			var new_link = makeRemoveLink(existingTagsAttributes, tag, tag + ' x');
 			new_link.bind('click', function() { removeTagsFromForm($(this)); return false; });
 			existingDiv.append(new_link);
 		}
@@ -189,20 +205,20 @@ function aInlineTaggableWidget(selector, options)
 		// Add a list of tags that may be removed
 		function removeTagsFromForm(link)
 		{
-			tag = link.attr('title');
+			var tag = link.attr('title');
 			var value = tagInput.val();
-			
+
 			value = value.replace(tag, '');
 			value = trimExcessCommas(value);
 			tagInput.val(value);
 			
 			link.remove();
-			
+						
 			// As we have just removed it from the list, we want the real deal populars.
 			if (typeof(popularTags[tag]) != 'undefined')
 			{
-				var linkLabel = tag + ' - ' + popularTags[tag];
-				var new_link = makeLink(existingTagsAttributes, tag, linkLabel);
+				var linkLabel = popularTags[tag];
+				var new_link = makePopularLink(existingTagsAttributes, tag, linkLabel);
 				new_link.bind('click', function() { addTagsToForm($(this)); return false; });
 				popularsDiv.append(new_link);
 			}
@@ -215,7 +231,7 @@ function aInlineTaggableWidget(selector, options)
 			// Add a list of tags that may be removed
 			var tagContainer = $('<div />');
 			tagContainer.addClass('a-inline-taggable-widget-tag-container');
-			var header = $('<h1 />');
+			var header = $('<h4 />');
 			header.text(containerLabel);
 			tagContainer.append(header);
 		
@@ -225,15 +241,16 @@ function aInlineTaggableWidget(selector, options)
 				var linkLabel = '';
 				if (linkLabelType == 'add')
 				{
-					linkLabel = x + ' - ' + tagArray[x];
+					linkLabel = tagArray[x];
+					var new_link = makePopularLink(linkAttributes, x, linkLabel);
+					new_link.bind('click', function() { addTagsToForm($(this));  return false; });
 				}
 				else if (linkLabelType == 'remove')
 				{
 					linkLabel = 'x ' + x;
-				}
-				
-				var new_link = makeLink(linkAttributes, x, linkLabel);
-								
+					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
+					new_link.bind('click', function() { removeTagsFromForm($(this));  return false; });
+				}				
 				tagContainer.append(new_link);
 			}
 			return tagContainer;
