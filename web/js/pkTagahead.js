@@ -113,7 +113,14 @@ function pkTagahead(tagaheadUrl)
 function aInlineTaggableWidget(selector, options)
 {
 	var typeaheadUrl = options['typeahead-url'];
+	var tagsLabel = options['tagsLabel'];
+	var popularTags = options['popular-tags'];
+	var existingTags = options['existing-tags'];
 	
+	if (typeof(tagsLabel) == 'undefined') 
+	{
+		tagsLabel = "Existing Tags";
+	};
 	
 	function makePopularLink(attributes, title, text)
 	{
@@ -152,8 +159,6 @@ function aInlineTaggableWidget(selector, options)
 
 	$(selector).each(function()
 	{	
-		var popularTags = options['popular-tags'];
-		var existingTags = options['existing-tags'];
 
 		// We don't want to display popular tags that we're already using
 		var unusedPopulars = {};
@@ -163,8 +168,7 @@ function aInlineTaggableWidget(selector, options)
 			{
 				unusedPopulars[x] = popularTags[x];
 			}
-		}
-		
+		}		
 		
 		var popularsAttributes = {};
 		var existingTagsAttributes = {};
@@ -197,7 +201,7 @@ function aInlineTaggableWidget(selector, options)
 			link.remove();
 
 			var new_link = makeRemoveLink(existingTagsAttributes, tag, tag + ' x');
-			new_link.bind('click', function() { removeTagsFromForm($(this)); return false; });
+			new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); return false; });
 			existingDiv.append(new_link);
 		}
 		
@@ -219,7 +223,7 @@ function aInlineTaggableWidget(selector, options)
 			{
 				var linkLabel = popularTags[tag];
 				var new_link = makePopularLink(existingTagsAttributes, tag, linkLabel);
-				new_link.bind('click', function() { addTagsToForm($(this)); return false; });
+				new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); return false; });
 				popularsDiv.append(new_link);
 			}
 		}
@@ -241,15 +245,19 @@ function aInlineTaggableWidget(selector, options)
 				var linkLabel = '';
 				if (linkLabelType == 'add')
 				{
+					tagContainer.addClass('a-popular-tags');
+					
 					linkLabel = tagArray[x];
 					var new_link = makePopularLink(linkAttributes, x, linkLabel);
-					new_link.bind('click', function() { addTagsToForm($(this));  return false; });
+					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent());  return false; });
 				}
 				else if (linkLabelType == 'remove')
 				{
+					tagContainer.addClass('a-existing-tags');
+										
 					linkLabel = 'x ' + x;
 					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
-					new_link.bind('click', function() { removeTagsFromForm($(this));  return false; });
+					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent());  return false; });
 				}				
 				tagContainer.append(new_link);
 			}
@@ -272,15 +280,14 @@ function aInlineTaggableWidget(selector, options)
 				existingTags[lp[x]] = lp[x];
 			}
 			
-			existingDiv.html(makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove').html());
+			existingDiv.html(makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove').html());
 			existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this)); return false; });
 			
 			return false;
 		}
 		addButton.bind('click', function() { commitTagsToForm(); return false; });
 	
-
-		existingDiv = makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove');
+		existingDiv = makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove');
 		existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
 		tagInput.parent().prepend(existingDiv);
 		
@@ -288,14 +295,9 @@ function aInlineTaggableWidget(selector, options)
 		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this));  return false; });
 		tagInput.parent().append(popularsDiv);
 
-
 		// TypeAhead
-		typeAheadBox.autocomplete(typeaheadUrl,
-			{
-				multiple: true
-			});
+		typeAheadBox.autocomplete(typeaheadUrl, {	multiple: true });
 			
-
 		// Catch that enter key, baby!
 		$(document).keyup(function(e)
 			{
