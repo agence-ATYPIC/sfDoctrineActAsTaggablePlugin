@@ -138,6 +138,18 @@ function aInlineTaggableWidget(selector, options)
 	{	
 		var popularTags = options['popular-tags'];
 		var existingTags = options['existing-tags'];
+
+		// We don't want to display popular tags that we're already using
+		var unusedPopulars = {};
+		for (x in popularTags)
+		{
+			if (typeof(existingTags[x]) == 'undefined')
+			{
+				unusedPopulars[x] = popularTags[x];
+			}
+		}
+		
+		
 		var popularsAttributes = {};
 		var existingTagsAttributes = {};
 		var existingDiv = $('<div />');
@@ -186,6 +198,7 @@ function aInlineTaggableWidget(selector, options)
 			
 			link.remove();
 			
+			// As we have just removed it from the list, we want the real deal populars.
 			if (typeof(popularTags[tag]) != 'undefined')
 			{
 				var linkLabel = tag + ' - ' + popularTags[tag];
@@ -208,7 +221,7 @@ function aInlineTaggableWidget(selector, options)
 		
 			var attributes = {};
 			for (x in tagArray)
-			{
+			{	
 				var linkLabel = '';
 				if (linkLabelType == 'add')
 				{
@@ -220,16 +233,7 @@ function aInlineTaggableWidget(selector, options)
 				}
 				
 				var new_link = makeLink(linkAttributes, x, linkLabel);
-				
-				if (linkLabelType == 'add')
-				{
-					new_link.bind('click', function() { addTagsToForm($(this));  return false; });
-				}
-				else if (linkLabelType == 'remove')
-				{
-					new_link.bind('click', function() { removeTagsFromForm($(this));  return false; });
-				}
-				
+								
 				tagContainer.append(new_link);
 			}
 			return tagContainer;
@@ -260,9 +264,11 @@ function aInlineTaggableWidget(selector, options)
 	
 
 		existingDiv = makeTagContainer('Existing Tags', existingTags, existingTagsAttributes, 'remove');
+		existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
 		tagInput.parent().prepend(existingDiv);
 		
-		popularsDiv = makeTagContainer('Popular Tags', popularTags, popularsAttributes, 'add');
+		popularsDiv = makeTagContainer('Popular Tags', unusedPopulars, popularsAttributes, 'add');
+		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this));  return false; });
 		tagInput.parent().append(popularsDiv);
 
 
