@@ -1,4 +1,4 @@
-s// You need to bring in jQuery first in order for this to work
+// You need to bring in jQuery first in order for this to work
 //
 // Call it like this:
 // pkTagahead(<?php echo json_encode(url_for("taggableComplete/complete")) ?>);
