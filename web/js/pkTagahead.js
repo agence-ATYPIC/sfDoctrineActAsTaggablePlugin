@@ -1,4 +1,4 @@
-// You need to bring in jQuery first in order for this to work
+s// You need to bring in jQuery first in order for this to work
 //
 // Call it like this:
 // pkTagahead(<?php echo json_encode(url_for("taggableComplete/complete")) ?>);
@@ -177,6 +177,7 @@ function aInlineTaggableWidget(selector, options)
 
 		// Establish the quick enhancement
 		var tagInput = $(this);
+		var typeAheadContainer = $('<div />');
 		var typeAheadBox = $('<input />');
 		typeAheadBox.attr('type', 'text');
 		
@@ -184,9 +185,10 @@ function aInlineTaggableWidget(selector, options)
 		addButton.text('Add');
 		addButton.attr({'href' : '#', 'class' : 'a-btn icon a-add add-tags-link', 'title' : 'Add these tags'});
 
+		typeAheadContainer.addClass('a-type-ahead-container').append(typeAheadBox).append(addButton);
+
 		tagInput.hide();
-		tagInput.parent().append(typeAheadBox);
-		tagInput.parent().append(addButton);
+		tagInput.parent().append(typeAheadContainer);
 
 
 		// Add a list of popular tags to be added
