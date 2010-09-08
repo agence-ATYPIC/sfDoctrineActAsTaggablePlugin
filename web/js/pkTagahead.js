@@ -127,7 +127,7 @@ function aInlineTaggableWidget(selector, options)
 		var new_tag = $('<span />');
 		var new_link = $('<a />');
 		new_tag.html("<span>"+text+"</span>");
-		new_tag.attr({ class: 'a-tag a-popular', title: title });
+		new_tag.attr({ title: title }).addClass('a-tag a-popular');
 		new_tag.prepend(new_link);
 		new_link.text(title);
 		new_link.attr(attributes);
@@ -139,10 +139,10 @@ function aInlineTaggableWidget(selector, options)
 		var new_tag = $('<span />');
 		var new_link = $('<a />');
 		new_tag.html("<span>"+title+"</span>");
-		new_tag.attr({ class:'a-tag' , title: title });
+		new_tag.attr({ title: title }).addClass('a-tag');
 		new_link.text('Remove Tag');
 		new_link.attr(attributes);
-		new_link.attr({ class: 'a-btn icon a-close-small no-label no-bg', title: 'Remove' });
+		new_link.attr({ title: 'Remove' }).addClass('a-btn icon a-close-small no-label no-bg');
 		new_link.prepend('<span class="icon"></span>');
 		new_tag.append(new_link);
 		return new_tag;
