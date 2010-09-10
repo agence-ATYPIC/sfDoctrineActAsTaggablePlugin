@@ -324,14 +324,14 @@ In case you want to display a long list of taggable objects with their associate
     #!php
     <?php
     $posts = PluginTagTable::getObjectTaggedWith('toto,tutu', array('model' => 'Post'));
-    sfPropelActAsTaggableBehavior::preloadTags($posts);
+    Taggable::preloadTags($posts);
 
     foreach ($posts as $post)
     {
-      echo $post-getTitle();
+      echo $post->getTitle();
 
       // won't require one request at each loop, as tags have been preloaded.
-      var_dump($post-getTags());
+      var_dump($post->getTags());
     }
 
 ### The Tag Widget Renderer ###
