@@ -182,10 +182,10 @@ function aInlineTaggableWidget(selector, options)
 		typeAheadBox.attr('type', 'text');
 		
 		var addButton = $('<a />');
-		addButton.text('Add');
+		addButton.html('<span class="icon"></span>Add');
 		addButton.attr({'href' : '#', 'class' : 'a-btn icon a-add add-tags-link', 'title' : 'Add these tags'});
 
-		typeAheadContainer.addClass('a-type-ahead-container').append(typeAheadBox).append(addButton);
+		typeAheadContainer.addClass('a-inline-taggable-widget').append(typeAheadBox).append(addButton);
 
 		tagInput.hide();
 		tagInput.parent().append(typeAheadContainer);
