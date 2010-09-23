@@ -5,6 +5,35 @@
 class PluginTagTable extends Doctrine_Table
 {
     /**
+    * Retrieves a tag by his name. If it does not exist, creates it (but does not
+    * save it)
+    *
+    * @param      String      $tagname
+    * @return     Tag
+    */
+    public function findOrCreateByTagname($tagname)
+    {
+        // retrieve or create the tag
+        $tag = Doctrine::getTable('Tag')->findOneByName($tagname);
+
+        if (!$tag)
+        {
+            $tag = new Tag();
+            $tag->name = $tagname;
+
+            $triple = TaggableToolkit::extractTriple($tagname);
+            list($tagname, $triple_namespace, $triple_key, $triple_value) = $triple;
+
+            $tag->triple_namespace = $triple_namespace;
+            $tag->triple_key = $triple_key;
+            $tag->triple_value = $triple_value;
+            $tag->is_triple = !is_null($triple_namespace);
+        }
+
+        return $tag;
+    }
+
+    /**
     * Returns all tags, eventually with a limit option.
     * The first optionnal parameter permits to add some restrictions on the
     * objects the selected tags are related to.
@@ -26,6 +55,7 @@ class PluginTagTable extends Doctrine_Table
         {
           $q->select('t.name');
         }
+
         if (!$q->getDqlPart('from'))
         {
           $q->from('Tag t INDEXBY t.name');
@@ -61,7 +91,6 @@ class PluginTagTable extends Doctrine_Table
             $q->addWhere('t.triple_value = ?', $options['value']);
         }
 
-//        return array_keys($q->orderBy('t.name')->execute(array(), Doctrine::HYDRATE_ARRAY));
         return array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
     }
 
@@ -200,8 +229,8 @@ class PluginTagTable extends Doctrine_Table
     * The second optionnal parameter permits to restrict the tag selection with
     * different criterias
     *
-    * @param      Criteria    $c
-    * @param      array       $options
+    * @param      Doctrine_Query  $q
+    * @param      array           $options
     * @return     array
     */
     public static function getPopulars($q = null, $options = array())
@@ -253,16 +282,16 @@ class PluginTagTable extends Doctrine_Table
         foreach ($taggings as $key => $tagging)
         {
             $tags_rs = Doctrine_Query::create()
-                                     ->select('t.name')
+                                     ->select('t.name, tg.taggable_id')
                                      ->from('Tag t, t.Tagging tg')
                                      ->where('tg.taggable_model = ?', $key)
                                      ->andWhereNotIn('t.name', $tags)
                                      ->andWhereIn('tg.taggable_id', $tagging)
-                                     ->execute(array(), Doctrine::HYDRATE_ARRAY);
+                                     ->execute(array(), Doctrine::HYDRATE_SCALAR);
 
             foreach ($tags_rs as $tag)
             {
-                $tag_name = $tag['name'];
+                $tag_name = $tag['t_name'];
 
                 if (!isset($result[$tag_name]))
                 {
@@ -280,7 +309,6 @@ class PluginTagTable extends Doctrine_Table
         }
 
         ksort($result);
-
         return TaggableToolkit::normalize($result);
     }
 
@@ -490,47 +518,19 @@ class PluginTagTable extends Doctrine_Table
     }
 
     /**
-    * Retrieves a tag by his name. If it does not exist, creates it (but does not
-    * save it)
-    *
-    * @param      String      $tagname
-    * @return     Tag
-    */
-    public static function findOrCreateByTagname($tagname)
-    {
-        // retrieve or create the tag
-        $tag = Doctrine::getTable('Tag')->findOneByName($tagname);
-
-        if (!$tag)
-        {
-            $tag = new Tag();
-            $tag->name = $tagname;
-
-            $triple = TaggableToolkit::extractTriple($tagname);
-            list($tagname, $triple_namespace, $triple_key, $triple_value) = $triple;
-
-            $tag->triple_namespace = $triple_namespace;
-            $tag->triple_key = $triple_key;
-            $tag->triple_value = $triple_value;
-            $tag->is_triple = !is_null($triple_namespace);
-        }
-
-        return $tag;
-    }
-
-    /**
      * Remove Tags without associations in Tagging table
      *
      * @return array
      */
-    public static function purgeOrphans() {
-      $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY t.id')
-        ->select('t.id')
-        ->addWhere('NOT EXISTS (SELECT tg.id FROM Tagging tg WHERE tg.tag_id = t.id)');
+    public static function purgeOrphans()
+    {
+        $q = Doctrine::getTable('Tag')->createQuery('t INDEXBY t.id')
+            ->select('t.id')
+            ->addWhere('NOT EXISTS (SELECT tg.id FROM Tagging tg WHERE tg.tag_id = t.id)');
 
-      $orphans = $q->execute();
-      $orphan_data = $orphans->toArray(false);
-      $orphans->delete();
-      return $orphan_data;
+        $orphans = $q->execute();
+        $orphan_data = $orphans->toArray(false);
+        $orphans->delete();
+        return $orphan_data;
     }
 }
