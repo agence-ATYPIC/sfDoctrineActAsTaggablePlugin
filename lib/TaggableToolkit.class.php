@@ -121,20 +121,21 @@ class TaggableToolkit
     *
     * @param      mixed     $model
     * @return     boolean
+    * @throws     Exception
     */
     public static function isTaggable($model)
     {
-        if(!Doctrine::isValidModelClass($model))
+        if (!Doctrine::isValidModelClass($model))
         {
             throw new Exception(sprintf('%s is not a doctrine class...', $model));
         }
 
-        if(is_string($model))
+        if (is_string($model))
         {
             $table = Doctrine::getTable($model);
         }
 
-        if(is_object($model))
+        if (is_object($model))
         {
             $table = $model->getTable();
         }

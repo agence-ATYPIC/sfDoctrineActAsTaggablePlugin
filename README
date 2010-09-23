@@ -29,9 +29,9 @@ to the existence of "Bob Smith" (with a normal space) and "Bob Smith"
 
 The following MySQL command will clean this up:
 
-    update tagging set tag_id = 
-      (select id from tag where tag.name = 
-        trim(replace((select name from tag where tag.id = tag_id), 
+    update tagging set tag_id =
+      (select id from tag where tag.name =
+        trim(replace((select name from tag where tag.id = tag_id),
       char(160), ' ')));
 
 ## Philosophy ##
@@ -45,21 +45,21 @@ The following MySQL command will clean this up:
 ## Get it installed ##
 
  * go to your project's root
- * Install the plugin: 
-        
+ * Install the plugin:
+
         ./symfony plugin-install http://svn.symfony-project.com/plugins/sfDoctrineActAsTaggablePlugin/trunk
- 
+
  * edit config/doctrine/schema.yml and add the Taggable behavior to the model you want to be taggable.
- 
+
         Post:
           actAs:  { Timestampable: ~ , Taggable: ~ }
- 
- * rebuild the model: 
- 
+
+ * rebuild the model:
+
         ./symfony doctrine-build-all
- 
+
  * clear cache:
- 
+
         ./symfony cc
 
 ## Usage ##
@@ -82,7 +82,7 @@ The plugin supports [machine tags](http://www.flickr.com/groups/api/discuss/7215
     $post = new Post();
     $post->addTag('iso:isbn=123456789');
     $post->save();
-    
+
     // assume City is a taggable class
     $city = new City();
     $city->addTag('geo:lat=47.3456');
@@ -203,7 +203,7 @@ The methods ``PluginTagTable::getRelatedTags()``, ``PluginTagTable::getObjectTag
 
     #!php
     <?php
-    // this will return all the objects that are at least tagged with 2 tags in the 
+    // this will return all the objects that are at least tagged with 2 tags in the
     // list "tata", "titi", "tutu", and "toto".
     $objects = PluginTagTable::getObjectTaggedWith('tata, titi, tutu, toto', array('nb_common_tags' => 2));
 
@@ -216,7 +216,7 @@ The plugin also proposes methods and helpers for generating tags cloud:
     $tags = PluginTagTable::getPopulars();
 
     // display the tags cloud. The tags will use the route name "@tag" which tags
-    // the request parameter "tags". The %s element of the route represents the 
+    // the request parameter "tags". The %s element of the route represents the
     // position of the tag
     echo tag_cloud($tags, '@tag?tags=%s');
 
@@ -234,7 +234,7 @@ When you click on a tag in a tag cloud, you will want to get a list of objects t
     $tags = PluginTagTable::getRelatedTags('toto,tutu', array('model' => 'Post'));
 
     // displays the related tags cloud, using the route "@post_tags" with the
-    // request parameter "tags". Please note that there is no %s in the route, 
+    // request parameter "tags". Please note that there is no %s in the route,
     // on the contrary to the tag_cloud() helper
     echo related_tag_cloud($tags, '@post_tags?tags=', 'toto,tutu');
 
@@ -247,14 +247,14 @@ This helper accepts several options:
         #!php
         <?php
         echo tag_cloud($tags, 'handle_tag_click("%s")', array(
-          'link_function'   =>  'link_to_function',  
+          'link_function'   =>  'link_to_function',
           'link_options'   =>  array('class=addtag')
           )
         );
- 
 
 
- 
+
+
 You might also want to display the tags of one item. The ``tag_list()`` helper is done for this:
 
     #!php
@@ -375,13 +375,13 @@ in other frameworks and languages.)
 Finally, style the tag suggestions so that they line up directly beneath
 your input tags and so that only the new tag suggestions are actually visible.
 
-The tag suggestions will be in a jQuery-generated `span` 
+The tag suggestions will be in a jQuery-generated `span`
 element containing a `ul` element containing `li` elements, with the new,
-selectable tag suggestions being in `a` elements within those. 
+selectable tag suggestions being in `a` elements within those.
 
 The rest of the tags are present as non-clickable text in each `li` which makes
 it easy to reset the entire tag input field at one whack. Note that we now
-use `display: none` for the non-visible portion. 
+use `display: none` for the non-visible portion.
 
 The right way to write your CSS depends on how your forms are structured.
 The important thing is to hide the tag-spacer class:
@@ -410,13 +410,13 @@ Since this task is typically run from cron, it is silent by default unless somet
 The `application`, `env`, and `connection` options are also supported.
 
 ## Plugin internals ##
-The plugin associates a parameterHolder to Propel objects, with 3 disjoin namespaces:
+The plugin associates a parameterHolder to the taggable template, with 3 disjoin namespaces:
 
  * '''tags''': tags that have been attached to the object, but not yet saved. Contract: tags are disjoin of (saved_tags union removed_tags)
  * '''saved_tags''': tags that are presently saved in the database. Contract: removed_tags are disjoin of (tags union saved_tags)
  * '''removed_tags''': tags that are presently saved in the database, but which will be removed at the next save(). Contract: removed_tags are disjoin of (tags union saved_tags)
 
-When required, the saved_tags namespace is filled with the tags previously present in the database. The tagging methods have an action on these three namespaces, which are serialized in the database after the Propel object gets saved.
+When required, the saved_tags namespace is filled with the tags previously present in the database. The tagging methods have an action on these three namespaces, which are serialized in the database after the Doctrine object gets saved.
 
 ### What is done when adding a tag ? ###
  * if the tag is present in the "removed_tags" namespace, the tagging request is interpreted as a tag-removal revert. The tag is then deleted front the "removed_tags" request, and brought back into "saved_tags".
@@ -446,7 +446,7 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
 
  * install the plugin
  * configure two model for using it, for instance "Post" and "Link"
- * edit the test file test/unit/sfPropelActAsTaggableBehaviorTest.php and modify line 21, 22 and 23:
+ * edit the test file test/unit/sfDoctrineActAsTaggableTest.php and modify line 21, 22 and 23:
     > define('TEST_CLASS', 'Post');
     > define('TEST_CLASS_2', 'Link');
     > define('DOCTRINE_CLASS', 'Address'); # a doctrine class not taggale please :D
@@ -457,7 +457,7 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
     or add a simlink to your main unit test folder
    ``
      cd unit/test
-     ln -s ../../plugins/sfDoctrineActAsTaggablePlugin/test/unit/sfDoctrineActAsTaggableTest.php 
+     ln -s ../../plugins/sfDoctrineActAsTaggablePlugin/test/unit/sfDoctrineActAsTaggableTest.php
    ``
      and run unit-test
    ``
@@ -465,8 +465,11 @@ The plugin has been deeply unit-tested, if not fully. The tests are located in t
    ``
 
 ## License and credits ##
-This plugin has been ported from [sfPropelActAsTaggableBehaviorPlugin](http://www.symfony-project.org/plugins/sfPropelActAsTaggableBehaviorPlugin) by [Mickael Kurmann](http://www.vieuxsteak.ch/) and is licensed under the MIT license.
+This plugin has been ported from [Xavier Lacot](http://lacot.org/)'s
+[sfPropelActAsTaggableBehaviorPlugin](http://www.symfony-project.org/plugins/sfPropelActAsTaggableBehaviorPlugin)
+by [Mickael Kurmann](http://www.vieuxsteak.ch/) and is licensed under the MIT
+license.
 
-Support for tag typeahead was contributed by Tom Boutell of 
-[P'unk Avenue](http://www.punkave.com/). 
+Support for tag typeahead was contributed by Tom Boutell of
+[P'unk Avenue](http://www.punkave.com/).
 
