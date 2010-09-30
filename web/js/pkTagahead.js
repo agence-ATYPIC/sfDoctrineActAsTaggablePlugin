@@ -159,7 +159,6 @@ function aInlineTaggableWidget(selector, options)
 
 	$(selector).each(function()
 	{	
-
 		// We don't want to display popular tags that we're already using
 		var unusedPopulars = {};
 		for (x in popularTags)
@@ -270,6 +269,8 @@ function aInlineTaggableWidget(selector, options)
 		// If the user doesn't click Save changes or add... tough?
 		function commitTagsToForm()
 		{
+			console.log('commitTagsToForm()');
+			
 			var value = tagInput.val() + ',' + typeAheadBox.val();
 			value = trimExcessCommas(value);
 			tagInput.val(value);
@@ -283,7 +284,12 @@ function aInlineTaggableWidget(selector, options)
 			}
 			
 			existingDiv.html(makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove').html());
-			existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this)); return false; });
+			existingDiv.find('a').each(function() {
+				$(this).bind('click', function() {
+					removeTagsFromForm($(this).parent());
+					return false;
+				});
+			});
 			
 			return false;
 		}
