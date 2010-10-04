@@ -546,7 +546,7 @@ class PluginTagTable extends Doctrine_Table
       $q->leftJoin('r.Tagging tg')->addSelect('r.*');
       foreach($models as $model)
       {
-        $q->addSelect("SUM(IF(tg.taggable_model = '$model' , 1, 0)) AS $model");
+        $q->addSelect("SUM(IF(tg.taggable_model = '$model' , 1, 0)) AS ".$model."Count");
       }
       $q->groupBy('r.id');
       
