@@ -533,4 +533,23 @@ class PluginTagTable extends Doctrine_Table
         $orphans->delete();
         return $orphan_data;
     }
+
+    /**
+     * Retrieves tags with the number of taggings for a given set of models, can be accessed using ->$model
+     *
+     * @param Array $models
+     * @param Doctrine_Query $q
+     * @return Doctrine_Query
+     */
+    public function queryTagsWithCountsByModel($models, $q = null)
+    {
+      $q->leftJoin('r.Tagging tg')->addSelect('r.*');
+      foreach($models as $model)
+      {
+        $q->addSelect("SUM(IF(tg.taggable_model = '$model' , 1, 0)) AS $model");
+      }
+      $q->groupBy('r.id');
+      
+      return $q;
+    }
 }
