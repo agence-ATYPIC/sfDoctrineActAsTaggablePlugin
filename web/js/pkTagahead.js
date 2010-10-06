@@ -116,6 +116,7 @@ function aInlineTaggableWidget(selector, options)
 	var tagsLabel = options['tagsLabel'];
 	var popularTags = options['popular-tags'];
 	var existingTags = options['existing-tags'];
+	var allTags = options['all-tags'];
 	
 	if (typeof(tagsLabel) == 'undefined') 
 	{
@@ -136,8 +137,24 @@ function aInlineTaggableWidget(selector, options)
 
 	function makeRemoveLink(attributes, title, text)
 	{
+		title = $.trim(title);
+		
 		var new_tag = $('<span />');
 		var new_link = $('<a />');
+		var tagTitle = title;
+		
+		if (typeof(allTags) != 'undefined')
+		{
+			if (typeof(allTags[title]) != 'undefined')
+			{
+				title = title + ' - ' + allTags[title];
+			}
+			else
+			{
+				title = title + ' - 0';
+			}
+		}
+
 		new_tag.html("<span>"+title+"</span>");
 		new_tag.attr({ title: title }).addClass('a-tag');
 		new_link.text('Remove Tag');
@@ -268,9 +285,7 @@ function aInlineTaggableWidget(selector, options)
 		// Add the new tags to the existing form input.
 		// If the user doesn't click Save changes or add... tough?
 		function commitTagsToForm()
-		{
-			console.log('commitTagsToForm()');
-			
+		{	
 			var value = tagInput.val() + ',' + typeAheadBox.val();
 			value = trimExcessCommas(value);
 			tagInput.val(value);

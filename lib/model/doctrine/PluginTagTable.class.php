@@ -233,7 +233,7 @@ class PluginTagTable extends Doctrine_Table
     * @param      array           $options
     * @return     array
     */
-    public static function getPopulars($q = null, $options = array())
+    public static function getPopulars($q = null, $options = array(), $normalized = true)
     {
         if ($q == null)
         {
@@ -241,7 +241,7 @@ class PluginTagTable extends Doctrine_Table
         }
 
         $all_tags = self::getAllTagNameWithCount($q, $options);
-        return TaggableToolkit::normalize($all_tags);
+        return ($normalized)? TaggableToolkit::normalize($all_tags) : $all_tags ;
     }
 
     /**
