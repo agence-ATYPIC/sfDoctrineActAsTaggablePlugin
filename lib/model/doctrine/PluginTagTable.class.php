@@ -552,4 +552,24 @@ class PluginTagTable extends Doctrine_Table
       
       return $q;
     }
+
+    /**
+     *
+     * @param $old_id id of tag to be merged
+     * @param $new_id id of tag to be merged in to
+     */
+    public function mergeTags($old_id, $new_id)
+    {
+      Doctrine_Query::create()
+        ->select('old.*')
+        ->from("tagging old, tagging new")
+        ->where("old.tag_id = ? AND new.tag_id = ? AND old.taggable_id = new.taggable_id AND old.taggable_model = new.taggable_model", array($old_id, $new_id))
+        ->execute()->delete();
+
+      Doctrine::getTable('Tagging')->createQuery()
+        ->update()
+        ->set('tag_id', $new_id)
+        ->where('tag_id = ?', $old_id)
+        ->execute();
+    }
 }
