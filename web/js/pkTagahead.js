@@ -156,7 +156,7 @@ function aInlineTaggableWidget(selector, options)
 		}
 
 		new_tag.html("<span>"+title+"</span>");
-		new_tag.attr({ title: title }).addClass('a-tag');
+		new_tag.attr({ title: tagTitle }).addClass('a-tag');
 		new_link.text('Remove Tag');
 		new_link.attr(attributes);
 		new_link.attr({ title: 'Remove' }).addClass('a-btn icon a-close-small no-label no-bg');
