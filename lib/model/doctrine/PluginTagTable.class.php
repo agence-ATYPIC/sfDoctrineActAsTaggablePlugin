@@ -224,20 +224,20 @@ class PluginTagTable extends Doctrine_Table
     * Returns the most popular tags with their associated weight. See
     * TaggableToolkit::normalize for more details.
     *
-    * The first optionnal parameter permits to add some restrictions on the
+    * The first optional parameter permits to add some restrictions on the
     * objects the selected tags are related to.
-    * The second optionnal parameter permits to restrict the tag selection with
+    * The second optional parameter permits to restrict the tag selection with
     * different criterias
     *
     * @param      Doctrine_Query  $q
     * @param      array           $options
     * @return     array
     */
-    public static function getPopulars($q = null, $options = array(), $normalized = true)
+    public static function getPopulars($q = null, $options = array(), $normalized = true, $limit = null)
     {
         if ($q == null)
         {
-            $q = Doctrine_Query::create()->limit(sfConfig::get('app_sfDoctrineActAsTaggablePlugin_limit', 100));
+            $q = Doctrine_Query::create()->limit((($limit != null) ? $limit : sfConfig::get('app_sfDoctrineActAsTaggablePlugin_limit', 100)));
         }
 
         $all_tags = self::getAllTagNameWithCount($q, $options);
