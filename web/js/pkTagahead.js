@@ -117,6 +117,7 @@ function aInlineTaggableWidget(selector, options)
 	var popularTags = options['popular-tags'];
 	var existingTags = options['existing-tags'];
 	var allTags = options['all-tags'];
+	var commitSelector = options['commit-selector'];
 	
 	if (typeof(tagsLabel) == 'undefined') 
 	{
@@ -195,7 +196,11 @@ function aInlineTaggableWidget(selector, options)
 		var tagInput = $(this);
 		var typeAheadContainer = $('<div />');
 		var typeAheadBox = $('<input />');
+		var typeAheadBoxId = 'inline-tag-ahead-box-' + Math.floor(Math.random() * 2000);
 		typeAheadBox.attr('type', 'text');
+		typeAheadBox.attr('id', typeAheadBoxId);
+		typeAheadBox.autocomplete(typeaheadUrl, {	multiple: true });
+
 		
 		var addButton = $('<a />');
 		addButton.html('<span class="icon"></span>Add');
@@ -309,6 +314,13 @@ function aInlineTaggableWidget(selector, options)
 			return false;
 		}
 		addButton.bind('click', function() { commitTagsToForm(); return false; });
+		if (commitSelector != 'undefined')
+		{
+			$(commitSelector).bind('click', function() {
+				commitTagsToForm();
+				return true;
+			});
+		}
 	
 		existingDiv = makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove');
 		existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
@@ -317,9 +329,6 @@ function aInlineTaggableWidget(selector, options)
 		popularsDiv = makeTagContainer('Popular Tags', unusedPopulars, popularsAttributes, 'add');
 		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this));  return false; });
 		tagInput.parent().append(popularsDiv);
-
-		// TypeAhead
-		typeAheadBox.autocomplete(typeaheadUrl, {	multiple: true });
 			
 		// Catch that enter key, baby!
 		$(document).keyup(function(e)
