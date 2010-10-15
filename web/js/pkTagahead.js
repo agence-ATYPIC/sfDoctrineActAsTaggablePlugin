@@ -109,7 +109,7 @@ function pkTagahead(tagaheadUrl)
   });
 }
 
-function aInlineTaggableWidget(selector, options)
+function pkInlineTaggableWidget(selector, options)
 {	
 	$(selector).each(function()
 	{	
