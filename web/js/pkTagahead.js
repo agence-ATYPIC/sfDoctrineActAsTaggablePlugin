@@ -120,6 +120,7 @@ function pkInlineTaggableWidget(selector, options)
 		var existingTags = {};
 		var allTags = options['all-tags'];
 		var commitSelector = options['commit-selector'];
+		var commitEvent = options['commit-event'];
 
 		if (typeof(tagsLabel) == 'undefined') 
 		{
@@ -133,12 +134,19 @@ function pkInlineTaggableWidget(selector, options)
 		{
 			allTags == {};
 		};
+		if (typeof(commitEvent) == 'undefined')
+		{
+			commitEvent = 'click';
+		}
 		
 		// populate existingTags
-		var lp = $(this).val().split(',');
-		for (x in lp)
+		if ($(this).val().trim() != '')
 		{
-			existingTags[lp[x]] = lp[x];
+			var lp = $(this).val().split(',');
+			for (x in lp)
+			{
+				existingTags[lp[x].trim()] = lp[x].trim();
+			}
 		}
 
 
@@ -344,7 +352,7 @@ function pkInlineTaggableWidget(selector, options)
 		addButton.bind('click', function() { commitTagsToForm(); return false; });
 		if (commitSelector != 'undefined')
 		{
-			$(commitSelector).bind('click', function() {
+			$(commitSelector).bind(commitEvent, function() {
 				commitTagsToForm();
 				return true;
 			});

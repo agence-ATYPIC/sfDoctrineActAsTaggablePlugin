@@ -370,6 +370,8 @@ all-tags: an array of ALL tags with counts that exist in your database
 
 commit-selector: the selector for your form's submit button.  This adds an event handler that will commit any tags that haven't been added by the "add" button before the form saves
 
+commit-event: a custom jQuery event to bind the commit action to.
+
 
 ### Typeahead ###
 
