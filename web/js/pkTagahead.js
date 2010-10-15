@@ -109,74 +109,91 @@ function pkTagahead(tagaheadUrl)
   });
 }
 
-
 function aInlineTaggableWidget(selector, options)
-{
-	var typeaheadUrl = options['typeahead-url'];
-	var tagsLabel = options['tagsLabel'];
-	var popularTags = options['popular-tags'];
-	var existingTags = options['existing-tags'];
-	var allTags = options['all-tags'];
-	var commitSelector = options['commit-selector'];
-	
-	if (typeof(tagsLabel) == 'undefined') 
-	{
-		tagsLabel = "Existing Tags";
-	};
-	
-	function makePopularLink(attributes, title, text)
-	{
-		var new_tag = $('<span />');
-		var new_link = $('<a />');
-		new_tag.html("<span>"+text+"</span>");
-		new_tag.attr({ title: title }).addClass('a-tag a-popular');
-		new_tag.prepend(new_link);
-		new_link.text(title);
-		new_link.attr(attributes);
-		return new_tag;
-	}
-
-	function makeRemoveLink(attributes, title, text)
-	{
-		title = $.trim(title);
-		
-		var new_tag = $('<span />');
-		var new_link = $('<a />');
-		var tagTitle = title;
-		
-		if (typeof(allTags) != 'undefined')
-		{
-			if (typeof(allTags[title]) != 'undefined')
-			{
-				title = title + ' - ' + allTags[title];
-			}
-			else
-			{
-				title = title + ' - 0';
-			}
-		}
-
-		new_tag.html("<span>"+title+"</span>");
-		new_tag.attr({ title: tagTitle }).addClass('a-tag');
-		new_link.text('Remove Tag');
-		new_link.attr(attributes);
-		new_link.attr({ title: 'Remove' }).addClass('a-btn icon a-close-small no-label no-bg');
-		new_link.prepend('<span class="icon"></span>');
-		new_tag.append(new_link);
-		return new_tag;
-	}
-	
-	function trimExcessCommas(string)
-	{
-		string = string.replace(/(^,)|(, ?$)/g, '');
-		string = string.replace(/(,,)|(, ,)/, ',');
-		string = $.trim(string);
-		
-		return string;
-	}	
-
+{	
 	$(selector).each(function()
 	{	
+		// Semi-global
+		var typeaheadUrl = options['typeahead-url'];
+		var tagsLabel = options['tags-label'];
+		var popularTags = options['popular-tags'];
+		var existingTags = {};
+		var allTags = options['all-tags'];
+		var commitSelector = options['commit-selector'];
+
+		if (typeof(tagsLabel) == 'undefined') 
+		{
+			tagsLabel = "Existing Tags";
+		};
+		if (typeof(popularTags) == 'undefined')
+		{
+			popularTags = {};
+		};
+		if (typeof(allTags) == 'undefined')
+		{
+			allTags == {};
+		};
+		
+		// populate existingTags
+		var lp = $(this).val().split(',');
+		for (x in lp)
+		{
+			existingTags[lp[x]] = lp[x];
+		}
+
+
+		function makePopularLink(attributes, title, text)
+		{
+			var new_tag = $('<span />');
+			var new_link = $('<a />');
+			new_tag.html("<span>"+text+"</span>");
+			new_tag.attr({ title: title }).addClass('a-tag a-popular');
+			new_tag.prepend(new_link);
+			new_link.text(title);
+			new_link.attr(attributes);
+			return new_tag;
+		}
+
+		function makeRemoveLink(attributes, title, text)
+		{
+			title = $.trim(title);
+
+			var new_tag = $('<span />');
+			var new_link = $('<a />');
+			var tagTitle = title;
+
+			if (typeof(allTags) != 'undefined')
+			{
+				if (typeof(allTags[title]) != 'undefined')
+				{
+					title = title + ' - ' + allTags[title];
+				}
+				else
+				{
+					title = title + ' - 0';
+				}
+			}
+
+			new_tag.html("<span>"+title+"</span>");
+			new_tag.attr({ title: tagTitle }).addClass('a-tag');
+			new_link.text('Remove Tag');
+			new_link.attr(attributes);
+			new_link.attr({ title: 'Remove' }).addClass('a-btn icon a-close-small no-label no-bg');
+			new_link.prepend('<span class="icon"></span>');
+			new_tag.append(new_link);
+			return new_tag;
+		}
+
+		function trimExcessCommas(string)
+		{
+			string = string.replace(/(^,)|(, ?$)/g, '');
+			string = string.replace(/(,,)|(, ,)/, ',');
+			string = $.trim(string);
+
+			return string;
+		}
+		
+		
 		// We don't want to display popular tags that we're already using
 		var unusedPopulars = {};
 		for (x in popularTags)
@@ -199,8 +216,19 @@ function aInlineTaggableWidget(selector, options)
 		var typeAheadBoxId = 'inline-tag-ahead-box-' + Math.floor(Math.random() * 2000);
 		typeAheadBox.attr('type', 'text');
 		typeAheadBox.attr('id', typeAheadBoxId);
-		typeAheadBox.autocomplete(typeaheadUrl, {	multiple: true });
-
+		if ((typeof(allTags) == 'undefined') && (typeof(typeaheadUrl) != 'undefined'))
+		{
+			typeAheadBox.autocomplete(typeaheadUrl, {	multiple: true });
+		}
+		else if (typeof(allTags) != 'undefined')
+		{
+			var allTagsReformat = new Array();
+			for (x in allTags)
+			{
+				allTagsReformat.push(x);
+			}
+			typeAheadBox.autocomplete(allTagsReformat, { multiple: true })
+		}
 		
 		var addButton = $('<a />');
 		addButton.html('<span class="icon"></span>Add');

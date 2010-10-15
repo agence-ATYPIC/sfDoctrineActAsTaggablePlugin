@@ -340,6 +340,37 @@ If you have a Symfony form with a 'tags' field, just replace your `$form['tags']
 
     <?php include_component('taggableComplete','tagWidget', array('object' => $form->getObject())) ?>
 
+### The Javascript Tag Widget ###
+
+Requires: jQuery and jQueryAutocomplete
+
+If you have a form with a 'tags' field, just pass the selector of that field to the tag widget in order to get a nice progressively enhanced Tag widget.
+
+Syntax:
+
+aInlineTaggableWidget(selector, options)
+
+selector: the selector for the "tags" field of your form
+options: a JSON array of options that you may pass to modify the behavior of the widget
+
+typeahead-url: a url for AJAX typeahead suggestions.  Try "url_for('taggableComplete/complete)"
+								(Note: the widget will prefer the all-tags array if it is provided)
+
+tags-label: a string that will label the widget
+
+popular-tags: an array of popular tags to be suggested to the user
+							the format of this array should be Tag => Count (i.e. {"Watermellons" : "3"})
+							
+existing-tags: an array of tags that already exist for the object
+							the format of this array should be Tag => Tag (i.e. {"Watermellons" : "Watermellons"})
+							
+all-tags: an array of ALL tags with counts that exist in your database
+					the format for this array should be Tag => Count (i.e. {"Watermellons" : "3"})
+					(Note: if this is supplied as well as a typeahead URL, the widget will prefer this array for typeahead)
+
+commit-selector: the selector for your form's submit button.  This adds an event handler that will commit any tags that haven't been added by the "add" button before the form saves
+
+
 ### Typeahead ###
 
 Typeahead support works but we now recommend using the tag widget renderer instead (see above).
