@@ -7,7 +7,7 @@
 			<?php foreach ($object->getTags() as $tag): ?>
 				<li>
 				<span><?php echo $tag ?></span>
-				<?php echo jq_link_to_remote('Remove', array(
+				<?php echo jq_link_to_remote('<span class="icon"></span>'.'Remove', array(
 					'url' => url_for('taggable_remove_tag', array('object_id' => $object->id, 'object_class' => get_class($object), 'tags' => $tag)),
 					'complete' => '$(".assigned-tags").parent().html(XMLHttpRequest.responseText);'
 					), array(
