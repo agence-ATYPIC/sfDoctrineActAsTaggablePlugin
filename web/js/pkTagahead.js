@@ -327,26 +327,28 @@ function pkInlineTaggableWidget(selector, options)
 		// If the user doesn't click Save changes or add... tough?
 		function commitTagsToForm()
 		{	
-			var value = tagInput.val() + ',' + typeAheadBox.val();
-			value = trimExcessCommas(value);
-			tagInput.val(value);
-			typeAheadBox.val('');
-			
-			existingTags = {};
-			var lp = value.split(',');
-			for (x in lp)
+			if (typeAheadBox.val() != '')
 			{
-				existingTags[lp[x]] = lp[x];
-			}
+				var value = tagInput.val() + ',' + typeAheadBox.val();
+				value = trimExcessCommas(value);
+				tagInput.val(value);
+				typeAheadBox.val('');
 			
-			existingDiv.html(makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove').html());
-			existingDiv.find('a').each(function() {
-				$(this).bind('click', function() {
-					removeTagsFromForm($(this).parent());
-					return false;
+				existingTags = {};
+				var lp = value.split(',');
+				for (x in lp)
+				{
+					existingTags[lp[x]] = lp[x];
+				}
+			
+				existingDiv.html(makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove').html());
+				existingDiv.find('a').each(function() {
+					$(this).bind('click', function() {
+						removeTagsFromForm($(this).parent());
+						return false;
+					});
 				});
-			});
-			
+			}
 			return false;
 		}
 		addButton.bind('click', function() { commitTagsToForm(); return false; });
