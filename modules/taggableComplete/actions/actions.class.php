@@ -22,17 +22,21 @@ class taggableCompleteActions extends sfActions
    * information discovery in some cases
    *
    */
-  public function executeComplete()
+  public function executeComplete(sfWebRequest $request)
   {
     $this->setLayout(false);
     $current = '';
-    if ($this->getRequestParameter('q'))
+    if ($request->hasParameter('q'))
     {
-    	$current = $this->getRequestParameter('q');
+    	$current = $request->getParameter('q');
+    }
+    elseif ($request->hasParameter('term'))
+    {
+      $current = $request->getParameter('term');
     }
     else
     {
-    	$current = $this->getRequestParameter('current');
+    	$current = $request->getParameter('current');
     }
     $tags = array();
     $tagsInfo = array();
@@ -93,7 +97,11 @@ class taggableCompleteActions extends sfActions
     
     if ($this->hasRequestParameter('q'))
     {
-    	$this->setTemplate('jQueryAutoComplete');
+    	$this->setTemplate('jQueryAutocompleteOld');
+    }
+    elseif ($this->hasRequestParameter('term'))
+    {
+    	$this->setTemplate('jQueryAutocomplete');
     }
   }
 

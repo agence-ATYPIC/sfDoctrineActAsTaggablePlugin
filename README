@@ -348,7 +348,7 @@ If you have a form with a 'tags' field, just pass the selector of that field to 
 
 Syntax:
 
-aInlineTaggableWidget(selector, options)
+pkInlineTaggableWidget(selector, options)
 
 selector: the selector for the "tags" field of your form
 options: a JSON array of options that you may pass to modify the behavior of the widget
@@ -357,14 +357,15 @@ These are the options you may pass to the widget:
 
 typeahead-url: a url for AJAX typeahead suggestions.  Try "url_for('taggableComplete/complete)"
 								(Note: the widget will prefer the all-tags array if it is provided)
-
+                This URL will receive a parameter called "term" containing the user's current partially typed tag and should respond with a JSON array of strings (hint: json_encode is very handy here).
+ 
 tags-label: a string that will label the widget
 
 popular-tags: an array of popular tags to be suggested to the user
-							the format of this array should be Tag => Count (i.e. {"Watermellons" : "3"})
+							the format of this array should be Tag => Count (i.e. {"Watermelons" : "3"})
 														
 all-tags: an array of ALL tags with counts that exist in your database
-					the format for this array should be Tag => Count (i.e. {"Watermellons" : "3"})
+					the format for this array should be Tag => Count (i.e. {"Watermelons" : "3"})
 					(Note: if this is supplied as well as a typeahead URL, the widget will prefer this array for typeahead)
 
 commit-selector: the selector for your form's submit button.  This adds an event handler that will commit any tags that haven't been added by the "add" button before the form saves
@@ -374,7 +375,7 @@ commit-event: a user-supplied jQuery event to bind the commit action to.  This i
 
 ### Typeahead ###
 
-Typeahead support works but we now recommend using the tag widget renderer instead (see above).
+NOTE: this section is legacy documentation only. typeahead support works but we now recommend using our improved progressive enhancement, pkInlineTaggableWidget, instead (see above). The old typeahead support requires sfJqueryReloadedPlugin (or jQuery and the obsolete bassistance autocomplete plugin), which we don't recommend.
 
 Tag typeahead support allows users to complete the current tag by pressing
 the tab key, which picks what the plugin believes to be the most likely
