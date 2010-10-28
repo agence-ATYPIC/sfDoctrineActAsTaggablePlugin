@@ -67,11 +67,11 @@ function pkInlineTaggableWidget(selector, options)
 			{
 				if (typeof(allTags[title]) != 'undefined')
 				{
-					title = title + ' - ' + allTags[title];
+					title = title + '<span class="a-tag-count">(' + allTags[title] + ')</span>';
 				}
 				else
 				{
-					title = title + ' - 0';
+					title = title + '<span class="a-tag-count">(0)</span>';
 				}
 			}
 
