@@ -204,11 +204,14 @@ function pkInlineTaggableWidget(selector, options)
 			value = trimExcessCommas(value);
 			tagInput.val(value);
 			
+			if (link.parent().children().length == 2)
+				link.parent().children('h4').hide();
 			link.remove();
 
 			var new_link = makeRemoveLink(existingTagsAttributes, tag, tag + ' x');
 			new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); return false; });
 			existingDiv.append(new_link);
+			existingDiv.children('h4').show();
 		}
 		
 		
@@ -222,6 +225,8 @@ function pkInlineTaggableWidget(selector, options)
 			value = trimExcessCommas(value);
 			tagInput.val(value);
 			
+			if (link.parent().children().length == 2)
+				link.parent().children('h4').hide();
 			link.remove();
 						
 			// As we have just removed it from the list, we want the real deal populars.
@@ -230,6 +235,7 @@ function pkInlineTaggableWidget(selector, options)
 				var linkLabel = popularTags[tag];
 				var new_link = makePopularLink(existingTagsAttributes, tag, linkLabel);
 				new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); return false; });
+				popularsDiv.children('h4').show();
 				popularsDiv.append(new_link);
 			}
 		}
@@ -244,6 +250,11 @@ function pkInlineTaggableWidget(selector, options)
 			var header = $('<h4 />');
 			header.text(containerLabel);
 			tagContainer.append(header);
+			
+			if (objEmpty(tagArray))
+			{
+				header.hide();
+			}
 		
 			var attributes = {};
 			for (x in tagArray)
@@ -339,6 +350,20 @@ function pkInlineTaggableWidget(selector, options)
 		 			commitTagsToForm();
 		 		}
 		 	});
+		
+		
+		function objEmpty(obj)
+		{
+			for (var prop in obj)
+			{
+				if (obj.hasOwnProperty(prop))
+				{
+					return false;
+				}
+			}
+			
+			return true;
+		}
 	});	
 	
 }
