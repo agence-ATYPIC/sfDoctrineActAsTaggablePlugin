@@ -8,7 +8,10 @@ class pkWidgetFormJQueryTaggable extends sfWidgetFormInput
 			'popular-tags' => null,
 			'all-tags' => null,
 			'commit-selector' => null,
-			'commit-event' => null
+			'commit-event' => null,
+			'popular-tags-label' => null,
+			'add-link-class' => null,
+			'remove-link-class' => null
 		);
 	
 	protected function configure($options = array(), $attributes = array())

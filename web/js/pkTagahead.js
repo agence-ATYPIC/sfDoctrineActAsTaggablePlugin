@@ -9,16 +9,23 @@ function pkInlineTaggableWidget(selector, options)
 		// Semi-global
 		var typeaheadUrl = options['typeahead-url'];
 		var tagsLabel = options['tags-label'];
+		var popularTagsLabel = options['popular-tags-label'];
 		var popularTags = options['popular-tags'];
 		var existingTags = {};
 		var allTags = options['all-tags'];
 		var commitSelector = options['commit-selector'];
 		var commitEvent = options['commit-event'];
+		var addLinkClass = options['add-link-class'];
+		var removeLinkClass = options['remove-link-class'];
 
 		if (typeof(tagsLabel) == 'undefined') 
 		{
 			tagsLabel = "Existing Tags";
 		};
+		if (popularTagsLabel === undefined)
+		{
+			popularTagsLabel = 'Popular Tags';
+		}
 		if (typeof(popularTags) == 'undefined')
 		{
 			popularTags = {};
@@ -30,6 +37,14 @@ function pkInlineTaggableWidget(selector, options)
 		if (typeof(commitEvent) == 'undefined')
 		{
 			commitEvent = 'click';
+		}
+		if (addLinkClass === undefined)
+		{
+			addLinkClass = 'a-popular-tags';
+		}
+		if (removeLinkClass === undefined)
+		{
+			removeLinkClass = 'a-existing-tags';
 		}
 		
 		// populate existingTags
@@ -262,7 +277,7 @@ function pkInlineTaggableWidget(selector, options)
 				var linkLabel = '';
 				if (linkLabelType == 'add')
 				{
-					tagContainer.addClass('a-popular-tags');
+					tagContainer.addClass(addLinkClass);
 					
 					linkLabel = tagArray[x];
 					var new_link = makePopularLink(linkAttributes, x, linkLabel);
@@ -270,7 +285,7 @@ function pkInlineTaggableWidget(selector, options)
 				}
 				else if (linkLabelType == 'remove')
 				{
-					tagContainer.addClass('a-existing-tags');
+					tagContainer.addClass(removeLinkClass);
 										
 					linkLabel = 'x ' + x;
 					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
@@ -322,7 +337,7 @@ function pkInlineTaggableWidget(selector, options)
 		existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
 		tagInput.parent().prepend(existingDiv);
 		
-		popularsDiv = makeTagContainer('Popular Tags', unusedPopulars, popularsAttributes, 'add');
+		popularsDiv = makeTagContainer(popularTagsLabel, unusedPopulars, popularsAttributes, 'add');
 		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this));  return false; });
 		tagInput.parent().append(popularsDiv);
 			

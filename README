@@ -361,8 +361,14 @@ typeahead-url: a url for AJAX typeahead suggestions.  Try "url_for('taggableComp
  
 tags-label: a string that will label the widget
 
+popular-tags-label: a string that will label the popular tags
+
 popular-tags: an array of popular tags to be suggested to the user
 							the format of this array should be Tag => Count (i.e. {"Watermelons" : "3"})
+							
+add-link-class: a css class to be applied to add links
+
+remove-link-class: a css class to be applied to remove links
 														
 all-tags: an array of ALL tags with counts that exist in your database
 					the format for this array should be Tag => Count (i.e. {"Watermelons" : "3"})
