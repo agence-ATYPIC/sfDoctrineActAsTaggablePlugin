@@ -346,7 +346,10 @@ function pkInlineTaggableWidget(selector, options)
 			{
 				if (e.keyCode == 13)
 				{
-					e.preventDefault();
+					if (typeAheadBox.get(0) === $(document.activeElement).get(0))
+					{
+						e.preventDefault();						
+					}
 				}
 			});
 		
@@ -354,7 +357,10 @@ function pkInlineTaggableWidget(selector, options)
 			{
 				if (e.keyCode == 13)
 				{
-					e.preventDefault();
+					if (typeAheadBox.get(0) === $(document.activeElement).get(0))
+					{
+						e.preventDefault();						
+					}
 				}
 			});
 		
@@ -362,6 +368,7 @@ function pkInlineTaggableWidget(selector, options)
 			{
 		 		if (e.keyCode == 13)
 		 		{
+					e.preventDefault();
 		 			commitTagsToForm();
 		 		}
 		 	});
