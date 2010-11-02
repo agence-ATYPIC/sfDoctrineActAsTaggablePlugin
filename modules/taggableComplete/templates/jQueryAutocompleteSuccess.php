@@ -1,3 +1,4 @@
+<?php $tags = array() ?>
 <?php foreach ($tagSuggestions as $tagInfo): ?>
   <?php $tags[] = $tagInfo['suggested'] ?>
 <?php endforeach ?>
