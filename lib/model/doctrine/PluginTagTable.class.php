@@ -376,7 +376,7 @@ class PluginTagTable extends Doctrine_Table
 
         if (!class_exists($model) || !PluginTagTable::isDoctrineModelClass($model))
         {
-            throw new DoctrineException(sprintf('The class "%s" does not exist, or it is not a model class.', $model));
+            throw new sfDoctrineException(sprintf('The class "%s" does not exist, or it is not a model class.', $model));
         }
 
         if (!$q instanceof Doctrine_Query)
@@ -480,7 +480,7 @@ class PluginTagTable extends Doctrine_Table
         {
             if (!class_exists($options['model'])) // TODO: add a test to that's a doctrine model...
             {
-                throw new DoctrineException(sprintf('The class "%s" does not exist, or it is not a model class.',
+                throw new sfDoctrineException(sprintf('The class "%s" does not exist, or it is not a model class.',
                                       $options['model']));
             }
 
