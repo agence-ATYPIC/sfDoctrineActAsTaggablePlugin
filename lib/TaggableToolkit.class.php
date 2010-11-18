@@ -46,7 +46,7 @@ class TaggableToolkit
       $tag = preg_replace('/\r?\n/', ',', $tag);
       $tag = explode(',', $tag);
       $tag = array_map('trim', $tag);
-      $tag = array_filter(array_map('rtrim', $tag));
+      $tag = array_filter($tag);
     }
 
     return $tag;
