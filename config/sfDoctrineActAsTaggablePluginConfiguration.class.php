@@ -1,17 +1,17 @@
 <?php
 
 /**
- * aBlogPlugin configuration.
+ * sfDoctrineActAsTaggablePluginConfiguration configuration.
  * 
  * @package     sfDoctrineActAsTaggablePlugin
  * @subpackage  config
  * @author      Your name here
- * @version     SVN: $Id: PluginConfiguration.class.php 17207 2009-04-10 15:36:26Z Kris.Wallsmith $
+ * @version     SVN: $Id$
  */
 class sfDoctrineActAsTaggablePluginConfiguration extends sfPluginConfiguration
 {
-
   static $registered = false;
+
   /**
    * @see sfPluginConfiguration
    */
@@ -19,13 +19,13 @@ class sfDoctrineActAsTaggablePluginConfiguration extends sfPluginConfiguration
   {
     // Yes, this can get called twice. This is Fabien's workaround:
     // http://trac.symfony-project.org/ticket/8026
-    
     if (!self::$registered)
     {
-     	if (sfConfig::get('app_taggable_routes_register', true))
-		  {
-				$this->dispatcher->connect('routing.load_configuration', array('taggableRouting', 'listenToRoutingLoadConfigurationEvent'));
-		  }
+      if (sfConfig::get('app_taggable_routes_register', true))
+      {
+        $this->dispatcher->connect('routing.load_configuration', array('taggableRouting', 'listenToRoutingLoadConfigurationEvent'));
+      }
+
       self::$registered = true;
     }
   }

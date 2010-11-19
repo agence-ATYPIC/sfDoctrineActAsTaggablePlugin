@@ -9,15 +9,23 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * TaggableToolkit some usefull helper functions
+ *
+ * @package     sfDoctrineActAsTaggablePlugin
+ * @subpackage  tool
+ * @version     SVN: $Id$
+ */
 class TaggableToolkit
 {
   /**
    * "Cleans" a string in order it to be used as a tag. Intended for strings
    * representing a single tag
    *
-   * @param string $tag
+   * @param string $tag     the tag string to clean
+   * @param array  $options
    *
-   * @return bool
+   * @return string
    */
   public static function cleanTagName($tag, $options = array())
   {
@@ -32,14 +40,13 @@ class TaggableToolkit
   }
 
   /**
-   * "Cleans" a string in order it to be used as a tag
-   * Intended for strings representing a single tag
+   * Explode tag string to tag array or return original tag
    *
    * @param mixed $tag
    *
    * @return array|string array or the $tag passed as reference...
    */
-  public static function explodeTagString($tag, $options = array())
+  public static function explodeTagString($tag)
   {
     if (is_string($tag) && (false !== strpos($tag, ',') || preg_match('/\n/', $tag)))
     {
@@ -47,22 +54,24 @@ class TaggableToolkit
       $tag = explode(',', $tag);
       $tag = array_map('trim', $tag);
       $tag = array_filter($tag);
+
+      return array_values($tag);
     }
 
     return $tag;
   }
 
   /**
-   * Extract triple tag values from tag.  Returned array will contain four
+   * Extract triple tag values from tag. Returned array will contain four
    * elements: tagname (same as input), namespace, key and value.
    *
-   * @param  string $tag
+   * @param string $tag
+   *
    * @return array
    */
   public static function extractTriple($tag)
   {
     $match = preg_match('/^([A-Za-z][A-Za-z0-9_]+):([A-Za-z][A-Za-z0-9_]+)=(.+)$/', $tag, $triple);
-
     if ($match)
     {
       return $triple;
@@ -75,8 +84,9 @@ class TaggableToolkit
    * Formats a tag string/array in a pretty string. For instance, will convert
    * tag3,tag1,tag2 into the following string : "tag1", "tag2" and "tag3"
    *
-   * @param      array/string    $tags
-   * @return     String
+   * @param array|string $tags the input tag(s)
+   *
+   * @return string
    */
   public static function formatTagString($tags)
   {
@@ -86,11 +96,10 @@ class TaggableToolkit
 
     if (is_string($tags))
     {
-      $tags = explode(',', $tags);
+      $tags = (array) self::explodeTagString($tags);
     }
 
     $nb_tags = count($tags);
-
     if ($nb_tags > 0)
     {
       sort($tags, SORT_LOCALE_STRING);
@@ -128,6 +137,10 @@ class TaggableToolkit
   {
     if (!Doctrine::isValidModelClass($model))
     {
+      if (is_object($model))
+      {
+        $model = get_class();
+      }
       throw new Exception(sprintf('%s is not a doctrine class...', $model));
     }
 
@@ -177,7 +190,11 @@ class TaggableToolkit
 
   /**
    * Transform every $tagname in $tags to namespace:key=$tagname:
+   * <code>
+   * <?php
    * array_walk($tags, 'TaggableToolkit::triplify', 'namespace:key');
+   * ?>
+   * </code>
    *
    * @param String $tagname
    * @param String $array_key
