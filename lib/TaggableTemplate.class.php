@@ -45,18 +45,15 @@
  * @author   Xavier Lacot <xavier@lacot.org>
  * @see      http://www.symfony-project.com/trac/wiki/sfDoctrineActAsTaggablePlugin
  */
-
-
 class TaggableListener extends Doctrine_Record_Listener
 {
     /**
-    * Tags saving logic, runned after the object himself has been saved
-    *
-    * @param      Doctrine_Event  $event
-    */
+     * Tags saving logic, runned after the object himself has been saved
+     *
+     * @param      Doctrine_Event  $event
+     */
     public function postSave(Doctrine_Event $event)
     {
-
         $object = $event->getInvoker();
 
         $added_tags = Taggable::get_tags($object);
@@ -65,13 +62,19 @@ class TaggableListener extends Doctrine_Record_Listener
         // save new tags
         foreach ($added_tags as $tagname)
         {
-            $tag = Doctrine::getTable('Tag')->findOrCreateByTagName($tagname);
+            $tag = Doctrine::getTable('Tag')
+              ->findOrCreateByTagName($tagname);
             $tag->save();
+
             $tagging = new Tagging();
             $tagging->tag_id = $tag->id;
             $tagging->taggable_id = $object->id;
             $tagging->taggable_model = get_class($object);
             $tagging->save();
+
+            $tag->free();
+            $tagging->free();
+            unset($tag, $tagging);
         }
 
         if($removed_tags)
@@ -98,20 +101,19 @@ class TaggableListener extends Doctrine_Record_Listener
     }
 
     /**
-    * Delete related Taggings when this object is deleted
-    *
-    * @param      Doctrine_Event $event
-    */
+     * Delete related Taggings when this object is deleted
+     *
+     * @param      Doctrine_Event $event
+     */
     public function preDelete(Doctrine_Event $event)
     {
-
         $object = $event->getInvoker();
 
         Doctrine::getTable('Tagging')->createQuery()
           ->delete()
-          ->addWhere('taggable_id = ?', $object->id)
-          ->addWhere('taggable_model = ?', get_class($object))
-          ->execute();
+          ->addWhere('taggable_id = ?')
+          ->addWhere('taggable_model = ?')
+          ->execute(array($object->id, get_class($object)));
     }
 }
 
@@ -123,8 +125,8 @@ class Taggable extends Doctrine_Template
     }
 
     /**
-    * parameterHolder access methods
-    */
+     * parameterHolder access methods
+     */
     public static function getTagsHolder($object)
     {
         if ((!isset($object->_tags)) || ($object->_tags == null))
@@ -303,13 +305,12 @@ class Taggable extends Doctrine_Template
                 $q = Doctrine_Query::create()
                   ->select('t.name')
                   ->from('Tag t INDEXBY t.name, t.Tagging tg')
-                  ->where('tg.taggable_id = ?', $this->getInvoker()->id)
-                  ->addWhere('tg.taggable_model = ?', get_class($this->getInvoker()))
-                ;
+                  ->addWhere('tg.taggable_id = ?')
+                  ->addWhere('tg.taggable_model = ?');
 
-                $saved_tags = $q->execute(array(), Doctrine::HYDRATE_ARRAY);
+                $saved_tags = $q->execute(array($this->getInvoker()->id, get_class($this->getInvoker())), Doctrine::HYDRATE_ARRAY);
+
                 $tags = array();
-
                 foreach ($saved_tags as $key => $infos)
                 {
                     $tags[$key] = $key;
