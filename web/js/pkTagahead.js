@@ -8,24 +8,16 @@ function pkInlineTaggableWidget(selector, options)
 	{	
 		// Semi-global
 		var typeaheadUrl = options['typeahead-url'];
-		var tagsLabel = options['tags-label'];
-		var popularTagsLabel = options['popular-tags-label'];
+		var tagsLabel = (options['tags-label']) ? options['tags-label'] : 'Existing Tags';
+		var popularTagsLabel = (options['popular-tags-label']) ? options['popular-tags-label'] : 'Popular Tags';
 		var popularTags = options['popular-tags'];
 		var existingTags = {};
 		var allTags = options['all-tags'];
 		var commitSelector = options['commit-selector'];
-		var commitEvent = options['commit-event'];
-		var addLinkClass = options['add-link-class'];
-		var removeLinkClass = options['remove-link-class'];
+		var commitEvent = (options['commit-event']) ? options['commit-event'] : 'click';
+		var addLinkClass = (options['add-link-class']) ? options['add-link-class'] : 'a-popular-tags';
+		var removeLinkClass = (options['remove-link-class']) ? options['remove-link-class'] : 'a-existing-tags';
 
-		if (typeof(tagsLabel) == 'undefined') 
-		{
-			tagsLabel = "Existing Tags";
-		};
-		if (popularTagsLabel === undefined)
-		{
-			popularTagsLabel = 'Popular Tags';
-		}
 		if (typeof(popularTags) == 'undefined')
 		{
 			popularTags = {};
@@ -34,18 +26,6 @@ function pkInlineTaggableWidget(selector, options)
 		{
 			allTags == {};
 		};
-		if (typeof(commitEvent) == 'undefined')
-		{
-			commitEvent = 'click';
-		}
-		if (addLinkClass === undefined)
-		{
-			addLinkClass = 'a-popular-tags';
-		}
-		if (removeLinkClass === undefined)
-		{
-			removeLinkClass = 'a-existing-tags';
-		}
 		
 		// populate existingTags
 		if ($(this).val().trim() != '')
@@ -56,7 +36,6 @@ function pkInlineTaggableWidget(selector, options)
 				existingTags[lp[x].trim()] = lp[x].trim();
 			}
 		}
-
 
 		function makePopularLink(attributes, title, text)
 		{
@@ -93,6 +72,7 @@ function pkInlineTaggableWidget(selector, options)
 			new_link.attr(attributes);
 			new_link.attr({ title: 'Remove Tag' }).addClass('a-link icon a-close-small');
 			new_link.prepend('<span class="icon"></span>');
+			new_tag.attr({ title: title }).addClass('a-tag a-existing');
 			new_tag.append(new_link);
 			return new_tag;
 		}
@@ -275,7 +255,6 @@ function pkInlineTaggableWidget(selector, options)
 				if (linkLabelType == 'add')
 				{
 					tagContainer.addClass(addLinkClass);
-					
 					linkLabel = tagArray[x];
 					var new_link = makePopularLink(linkAttributes, x, linkLabel);
 					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent());  return false; });
@@ -283,7 +262,6 @@ function pkInlineTaggableWidget(selector, options)
 				else if (linkLabelType == 'remove')
 				{
 					tagContainer.addClass(removeLinkClass);
-										
 					linkLabel = 'x ' + x;
 					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
 					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent());  return false; });
@@ -331,7 +309,7 @@ function pkInlineTaggableWidget(selector, options)
 		}
 	
 		existingDiv = makeTagContainer(tagsLabel, existingTags, existingTagsAttributes, 'remove');
-		existingDiv.children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
+		existingDiv.addClass(removeLinkClass).children('a').bind('click', function() { removeTagsFromForm($(this));  return false; });
 		tagInput.parent().prepend(existingDiv);
 		
 		popularsDiv = makeTagContainer(popularTagsLabel, unusedPopulars, popularsAttributes, 'add');
