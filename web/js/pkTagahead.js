@@ -72,7 +72,7 @@ function pkInlineTaggableWidget(selector, options)
 			new_link.attr(attributes);
 			new_link.attr({ title: 'Remove Tag' }).addClass('a-link icon a-close-small');
 			new_link.prepend('<span class="icon"></span>');
-			new_tag.attr({ title: title }).addClass('a-tag a-existing');
+			new_tag.attr({ title: tagTitle }).addClass('a-tag a-existing');
 			new_tag.append(new_link);
 			return new_tag;
 		}
@@ -212,7 +212,6 @@ function pkInlineTaggableWidget(selector, options)
 		{
 			var tag = link.attr('title');
 			var value = tagInput.val();
-
 			value = value.replace(tag, '');
 			value = trimExcessCommas(value);
 			tagInput.val(value);
@@ -257,14 +256,14 @@ function pkInlineTaggableWidget(selector, options)
 					tagContainer.addClass(addLinkClass);
 					linkLabel = tagArray[x];
 					var new_link = makePopularLink(linkAttributes, x, linkLabel);
-					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent());  return false; });
+					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); return false; });
 				}
 				else if (linkLabelType == 'remove')
 				{
 					tagContainer.addClass(removeLinkClass);
 					linkLabel = 'x ' + x;
 					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
-					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent());  return false; });
+					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); return false; });
 				}				
 				tagContainer.append(new_link);
 			}
