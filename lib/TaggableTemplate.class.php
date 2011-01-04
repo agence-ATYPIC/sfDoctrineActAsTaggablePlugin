@@ -471,21 +471,25 @@ class Taggable extends Doctrine_Template
         }
 
         $searched[$class][$object->getPrimaryKey()] = $object;
-        self::set_saved_tags($object, array());
+        Taggable::set_saved_tags($object, array());
       }
 
       $q = Doctrine::getTable('Tagging')->createQuery('t')
         ->leftJoin('t.Tag as tag')
-        ->andWhere('t.taggable_model = ? AND t.taggable_id IN ?')
-        ->orderBy('t.taggable_id');
+        ->orderBy('t.taggable_id')
+        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
       foreach($searched as $model => $instances)
       {
-        $taggings = $q->execute(array($model, array_keys($instances)), Doctrine::HYDRATE_ARRAY);
+        $qClone = clone $q;
+        $taggings = $qClone
+          ->addWhere('t.taggable_model = ?', $model)
+          ->andWhereIn('t.taggable_id', array_keys($instances))
+          ->execute();
 
         foreach($taggings as $tagging)
         {
-          self::add_saved_tag($instances[$tagging['taggable_id']], $tagging['Tag']['name']);
+          Taggable::add_saved_tag($instances[$tagging['taggable_id']], $tagging['Tag']['name']);
         }
       }
     }
