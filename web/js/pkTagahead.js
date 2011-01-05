@@ -28,7 +28,7 @@ function pkInlineTaggableWidget(selector, options)
 		};
 		
 		// populate existingTags
-		if ($(this).val().trim() != '')
+		if($.trim($(this).val()) != '')
 		{
 			var lp = $(this).val().split(',');
 			for (x in lp)
