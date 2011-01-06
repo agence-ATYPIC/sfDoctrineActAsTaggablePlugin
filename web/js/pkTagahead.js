@@ -239,7 +239,7 @@ function pkInlineTaggableWidget(selector, options)
 			var tagContainer = $('<div />');
 			tagContainer.addClass('a-inline-taggable-widget-tag-container');
 			var header = $('<h4 />');
-			header.text(containerLabel);
+			header.text(containerLabel).addClass('a-tag-heading');
 			tagContainer.append(header);
 			
 			if (objEmpty(tagArray))
