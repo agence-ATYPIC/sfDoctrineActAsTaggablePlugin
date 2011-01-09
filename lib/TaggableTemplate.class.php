@@ -230,6 +230,11 @@ class Taggable extends Doctrine_Template
     */
     public function addTag($tagname, $options = array())
     {
+        if ('' == $tagname)
+        {
+          return;
+        }
+
         $tagname = TaggableToolkit::explodeTagString($tagname);
 
         if (is_array($tagname))
