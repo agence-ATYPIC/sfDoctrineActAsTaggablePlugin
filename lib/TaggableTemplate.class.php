@@ -93,7 +93,7 @@ class TaggableListener extends Doctrine_Record_Listener
 	            ->execute();
         }
 
-        $tags = array_merge(Taggable::get_tags($object) , $object->getSavedTags());
+        $tags = (Taggable::get_tags($object) + $object->getSavedTags());
 
         Taggable::set_saved_tags($object, $tags);
         Taggable::clear_tags($object);
@@ -340,7 +340,7 @@ class Taggable extends Doctrine_Template
     */
     public function getTags($options = array())
     {
-        $tags = array_merge($this->get_tags($this->getInvoker()) , $this->getSavedTags());
+        $tags = ($this->get_tags($this->getInvoker()) + $this->getSavedTags());
 
         if (isset($options['is_triple']) && (true === $options['is_triple']))
         {
@@ -510,7 +510,7 @@ class Taggable extends Doctrine_Template
 
         $this->set_saved_tags($this->getInvoker(), array());
         $this->set_tags($this->getInvoker(), array());
-        $this->set_removed_tags($this->getInvoker(), array_merge($this->get_removed_tags($this->getInvoker()) , $saved_tags));
+        $this->set_removed_tags($this->getInvoker(), ($this->get_removed_tags($this->getInvoker()) + $saved_tags));
     }
 
     /**
