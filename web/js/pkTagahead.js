@@ -33,7 +33,7 @@ function pkInlineTaggableWidget(selector, options)
 			var lp = $(this).val().split(',');
 			for (x in lp)
 			{
-				existingTags[lp[x].trim()] = lp[x].trim();
+				existingTags[$.trim(lp[x])] = $.trim(lp[x]);
 			}
 		}
 
