@@ -99,7 +99,7 @@ It is possible to retrieve tags from a taggable object:
 
     #!php
     <?php
-    $post = Doctrine::getTable('Post')->find(1);
+    $post = Doctrine_Core::getTable('Post')->find(1);
     $tags = $post->getTags();
 
     foreach ($tags as $tag)
@@ -112,7 +112,7 @@ pass some options to the ``getTags()`` method:
 
     #!php
     <?php
-    $post = Doctrine::getTable('Post')->find(1);
+    $post = Doctrine_Core::getTable('Post')->find(1);
     $tags = $post->getTags(array('is_triple' => true,
                                  'namespace' => 'geo',
                                  'return'    => 'value'));
@@ -139,7 +139,7 @@ Of course, tags can also be removed:
 
     #!php
     <?php
-    $post = Doctrine::getTable('Post')->find(1);
+    $post = Doctrine_Core::getTable('Post')->find(1);
     $post->removeTag('toto');
     $post->removeTag('toto, tutu');
     $post->removeAllTags();
@@ -150,7 +150,7 @@ All the tags of an object can be set or replaced at once, using the method
 
     #!php
     <?php
-    $post = Doctrine::getTable('Post')->find(1);
+    $post = Doctrine_Core::getTable('Post')->find(1);
     $post->setTags('toto, tutu');
     $post->save();
 
