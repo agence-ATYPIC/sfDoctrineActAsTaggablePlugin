@@ -135,7 +135,7 @@ class TaggableToolkit
    */
   public static function isTaggable($model)
   {
-    if (!Doctrine::isValidModelClass($model))
+    if (!Doctrine_Core::isValidModelClass($model))
     {
       if (is_object($model))
       {
@@ -146,7 +146,7 @@ class TaggableToolkit
 
     if (is_string($model))
     {
-      $table = Doctrine::getTable($model);
+      $table = Doctrine_Core::getTable($model);
     }
     else if (is_object($model))
     {

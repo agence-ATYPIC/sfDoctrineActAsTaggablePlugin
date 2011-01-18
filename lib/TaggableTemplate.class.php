@@ -62,7 +62,7 @@ class TaggableListener extends Doctrine_Record_Listener
         // save new tags
         foreach ($added_tags as $tagname)
         {
-            $tag = Doctrine::getTable('Tag')
+            $tag = Doctrine_Core::getTable('Tag')
               ->findOrCreateByTagName($tagname);
             $tag->save();
 
@@ -83,9 +83,9 @@ class TaggableListener extends Doctrine_Record_Listener
                 ->from('Tag t INDEXBY t.id')
                 ->whereIn('t.name', $removed_tags);
 
-            $removed_tag_ids = array_keys($q->execute(array(), Doctrine::HYDRATE_ARRAY));
+            $removed_tag_ids = array_keys($q->execute(array(), Doctrine_Core::HYDRATE_ARRAY));
 
-            Doctrine::getTable('Tagging')->createQuery()
+            Doctrine_Core::getTable('Tagging')->createQuery()
 	            ->delete()
 	            ->whereIn('tag_id', $removed_tag_ids)
 	            ->addWhere('taggable_id = ?', $object->id)
@@ -109,7 +109,7 @@ class TaggableListener extends Doctrine_Record_Listener
     {
         $object = $event->getInvoker();
 
-        Doctrine::getTable('Tagging')->createQuery()
+        Doctrine_Core::getTable('Tagging')->createQuery()
           ->delete()
           ->addWhere('taggable_id = ?')
           ->addWhere('taggable_model = ?')
@@ -313,7 +313,7 @@ class Taggable extends Doctrine_Template
                   ->addWhere('tg.taggable_id = ?')
                   ->addWhere('tg.taggable_model = ?');
 
-                $saved_tags = $q->execute(array($this->getInvoker()->id, get_class($this->getInvoker())), Doctrine::HYDRATE_ARRAY);
+                $saved_tags = $q->execute(array($this->getInvoker()->id, get_class($this->getInvoker())), Doctrine_Core::HYDRATE_ARRAY);
 
                 $tags = array();
                 foreach ($saved_tags as $key => $infos)
@@ -479,10 +479,10 @@ class Taggable extends Doctrine_Template
         Taggable::set_saved_tags($object, array());
       }
 
-      $q = Doctrine::getTable('Tagging')->createQuery('t')
+      $q = Doctrine_Core::getTable('Tagging')->createQuery('t')
         ->leftJoin('t.Tag as tag')
         ->orderBy('t.taggable_id')
-        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        ->setHydrationMode(Doctrine_Core::HYDRATE_ARRAY);
 
       foreach($searched as $model => $instances)
       {

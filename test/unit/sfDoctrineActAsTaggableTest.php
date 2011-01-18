@@ -116,11 +116,11 @@ $object = _create_object();
 $object->addTag('toto,international,tata');
 $object->save();
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $object->removeTag('tata');
 $object->addTag('tata');
 $object->save();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $object_tags = $object->getTags();
 $t->ok(count($object_tags) == 3, 'when removing one previously saved tag, then restoring it, and then saving it again, this tag is not duplicated.');
 
@@ -131,7 +131,7 @@ $object->removeAllTags();
 $object->addTag('toto,tutu,tata');
 $object->save();
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $object_tags = $object->getTags();
 $t->ok(count($object_tags) == 3, 'when removing all previously saved tags, then restoring it, and then saving it again, tags are not duplicated.');
 
@@ -142,14 +142,14 @@ $previous_count = count($object->getTags());
 $object->removeAllTags();
 $object->save();
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $t->ok(($previous_count == 3) && !$object->hasTag(), 'previously in-database tags can be deleted.');
 
 $object = _create_object();
 $object->addTag('toto, tutu, test');
 $object->save();
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 
 $object2 = _create_object();
 $object2->addTag('clever age, symfony, test');
@@ -168,7 +168,7 @@ $object->removeAllTags();
 $object->setTags('');
 $object->save();
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $t->ok(count($object->getTags()) == 0, 'when the tags are set twice, or all removed twice, before the object is saved, then all the prvious tags are still removed.');
 
 unset($object, $object2, $object2_copy);
@@ -232,7 +232,7 @@ $object2->save();
 
 $object2->delete();
 
-$tags = Doctrine::getTable('Tag')->getAllTagNameWithCount();
+$tags = Doctrine_Core::getTable('Tag')->getAllTagNameWithCount();
 $t->ok(isset($tags['tag4']) && !isset($tags['tag7']), 'the taggings associated to one object are deleted when this object is deleted.');
 
 
@@ -266,36 +266,36 @@ $object5->addTag('tag1,tag3,tag7');
 $object5->save();
 
 // getAllTagName() test
-$result = Doctrine::getTable('Tag')->getAllTagName();
+$result = Doctrine_Core::getTable('Tag')->getAllTagName();
 $t->ok($result == array('tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'), 'all tags can be retrieved with getAllTagName().');
 
 // getAllTagNameWithCount() test
-$tags = Doctrine::getTable('Tag')->getAllTagNameWithCount();
+$tags = Doctrine_Core::getTable('Tag')->getAllTagNameWithCount();
 $t->ok($tags == array('tag1' => 3, 'tag2' => 2, 'tag3' => 5, 'tag4' => 2, 'tag5' => 1, 'tag6' => 1, 'tag7' => 3, 'tag8' => 1), 'all tags can be retrieved with getAllTagName().');
 
 // getPopulars() test
 $q = Doctrine_Query::create()->limit(3);
-$tags = Doctrine::getTable('Tag')->getPopulars($q);
+$tags = Doctrine_Core::getTable('Tag')->getPopulars($q);
 $t->ok(array_keys($tags) == array('tag1', 'tag3', 'tag7'), 'most popular tags can be retrieved with getPopulars().');
 $t->ok($tags['tag3'] >= $tags['tag1'], 'getPopulars() preserves tag importance.');
 
 // getRelatedTags() test
-$tags = Doctrine::getTable('Tag')->getRelatedTags('tag8');
+$tags = Doctrine_Core::getTable('Tag')->getRelatedTags('tag8');
 $t->ok(array_keys($tags) == array('tag2', 'tag3', 'tag7'), 'related tags can be retrieved with getRelatedTags().');
 
-$tags = Doctrine::getTable('Tag')->getRelatedTags('tag2', array('limit' => 1));
+$tags = Doctrine_Core::getTable('Tag')->getRelatedTags('tag2', array('limit' => 1));
 $t->ok(array_keys($tags) == array('tag3'), 'when a limit is set, only most popular related tags are returned by getRelatedTags().');
 
 // getRelatedTags() test
-$tags = Doctrine::getTable('Tag')->getRelatedTags('tag7');
+$tags = Doctrine_Core::getTable('Tag')->getRelatedTags('tag7');
 $t->ok(array_keys($tags) == array('tag1', 'tag2', 'tag3', 'tag4', 'tag8'), 'getRelatedTags() aggregates tags from different objects.');
 
 // getRelatedTags() test
-$tags = Doctrine::getTable('Tag')->getRelatedTags(array('tag2', 'tag7'));
+$tags = Doctrine_Core::getTable('Tag')->getRelatedTags(array('tag2', 'tag7'));
 $t->ok(array_keys($tags) == array('tag3', 'tag8'), 'getRelatedTags() can retrieve tags related to an array of tags.');
 
 // getRelatedTags() test
-$tags = Doctrine::getTable('Tag')->getRelatedTags('tag2,tag7');
+$tags = Doctrine_Core::getTable('Tag')->getRelatedTags('tag2,tag7');
 $t->ok(array_keys($tags) == array('tag3', 'tag8'), 'getRelatedTags() also accepts a coma-separated string.');
 
 // getObjectTaggedWith() tests
@@ -307,16 +307,16 @@ $object_2_2 = _create_object_2();
 $object_2_2->addTag('tag2,tag7');
 $object_2_2->save();
 
-$tagged_with_tag4 = Doctrine::getTable('Tag')->getObjectTaggedWith('tag4');
+$tagged_with_tag4 = Doctrine_Core::getTable('Tag')->getObjectTaggedWith('tag4');
 $t->ok(count($tagged_with_tag4) == 2, 'getObjectTaggedWith() returns objects tagged with one specific tag.');
 
-$tagged_with_tag7 = Doctrine::getTable('Tag')->getObjectTaggedWith('tag7');
+$tagged_with_tag7 = Doctrine_Core::getTable('Tag')->getObjectTaggedWith('tag7');
 $t->ok(count($tagged_with_tag7) == 5, 'getObjectTaggedWith() can return several object types.');
 
-$tagged_with_tag17 = Doctrine::getTable('Tag')->getObjectTaggedWith(array('tag1', 'tag7'));
+$tagged_with_tag17 = Doctrine_Core::getTable('Tag')->getObjectTaggedWith(array('tag1', 'tag7'));
 $t->ok(count($tagged_with_tag17) == 3, 'getObjectTaggedWith() returns objects tagged with several specific tags.');
 
-$tagged_with_tag127 = Doctrine::getTable('Tag')->getObjectTaggedWith('tag1, tag2, tag7',
+$tagged_with_tag127 = Doctrine_Core::getTable('Tag')->getObjectTaggedWith('tag1, tag2, tag7',
                                              array('nb_common_tags' => 2));
 $t->ok(count($tagged_with_tag127) == 6, 'the "nb_common_tags" option of getObjectTaggedWith() returns objects tagged with a certain number of tags within a set of specific tags.');
 
@@ -370,10 +370,10 @@ $object->save();
 $object_tags = $object->getTags();
 $t->ok($object->hasTag('ns:key=value'), 'object has triple tag');
 
-$tag = Doctrine::getTable('Tag')->findOrCreateByTagname('ns:key=value');
+$tag = Doctrine_Core::getTable('Tag')->findOrCreateByTagname('ns:key=value');
 $t->ok($tag->getIsTriple(), 'a triple tag created from a string is identified as a triple.');
 
-$tag = Doctrine::getTable('Tag')->findOrCreateByTagname('tutu');
+$tag = Doctrine_Core::getTable('Tag')->findOrCreateByTagname('tutu');
 $t->ok(!$tag->getIsTriple(), 'a non tripled tag created from a string is not identified as a triple.');
 
 
@@ -394,7 +394,7 @@ $tags = $object->getTags();
 $t->ok(count($tags) == 5, 'The addTags() method permits to create triple tags, that can be retrieved using getTags().');
 
 $id = $object->getPrimaryKey();
-$object = Doctrine::getTable(TEST_CLASS)->findOneById($id);
+$object = Doctrine_Core::getTable(TEST_CLASS)->findOneById($id);
 $tags = $object->getTags();
 $t->ok(count($tags) == 5, 'The addTags() method permits to create triple tags, that can be retrieved using getTags(), even when saved.');
 
@@ -435,11 +435,11 @@ $t->ok(count($ns) == 4, 'The method getTags() permit to select only the names of
 sfConfig::set('app_sfDoctrineActAsTaggablePlugin_triple_distinct', false);
 $t->diag('querying triple tagging');
 
-$result = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true));
+$result = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true));
 $t->ok(in_array('ns:key=value', $result), 'triple tags are returned when searching for triples only.');
 $t->ok(!in_array('tutu', $result), 'ordinary tags are not returned when searching for triples only.');
 
-$result = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => false));
+$result = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => false));
 $t->ok(in_array('tutu', $result), 'normal tags are returned when searching for ordinary ones only.');
 $t->ok(!in_array('ns:key=value', $result), 'triple tags are not returned when searching for normal ones.');
 
@@ -447,16 +447,16 @@ $t->ok(!in_array('ns:key=value', $result), 'triple tags are not returned when se
 // these tests the search of specific triple tags parts
 $t->diag('searching for specific parts of triple');
 
-$result = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
+$result = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
 $t->ok($result === array('ns:key=value', 'ns:key=tutu', 'ns:key=titi', 'ns:key=toto'), 'it is possible to search for triple tags by namespace.');
 
-$result = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true, 'key' => 'key'));
+$result = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true, 'key' => 'key'));
 $t->ok($result === array('ns:key=value', 'ns:key=tutu', 'ns:key=titi', 'ns:key=toto'), 'it is possible to search for triple tags by key.');
 
-$result = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true, 'value' => 'tutu'));
+$result = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true, 'value' => 'tutu'));
 $t->ok($result === array('ns:key=tutu'), 'it is possible to search for triple tags by value.');
 
-$objects_triple = Doctrine::getTable('Tag')->getObjectTaggedWith(array(), array('namespace' => 'ns', 'model' => TEST_CLASS));
+$objects_triple = Doctrine_Core::getTable('Tag')->getObjectTaggedWith(array(), array('namespace' => 'ns', 'model' => TEST_CLASS));
 $t->ok(count($objects_triple) == 1, 'it is possible to retrieve objects tagged with certain triple tags.');
 
 
@@ -483,7 +483,7 @@ $object->addTag('ns:key=titi');
 $object->addTag('ns:second_key=toto');
 $object->save();
 
-$tags_triple = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
+$tags_triple = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
 $t->ok(count($tags_triple) == 2, 'it is possible to set up the plugin so that namespace:key is a unique key.');
 
 $object2 = _create_object();
@@ -491,7 +491,7 @@ $object2->addTag('ns:key=value');
 $object2->addTag('ns:second_key=toto');
 $object2->save();
 
-$tags_triple = Doctrine::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
+$tags_triple = Doctrine_Core::getTable('Tag')->getAllTagName(null, array('triple' => true, 'namespace' => 'ns'));
 $t->ok(count($tags_triple) == 3, 'it is possible to apply triple tags to various objects when the plugin is set up so that namespace:key is a unique key.');
 
 

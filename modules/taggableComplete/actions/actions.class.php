@@ -112,7 +112,7 @@ class taggableCompleteActions extends sfActions
 		
 		$this->forward404unless($object_id && $object_class);
 		
-		$object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
+		$object = Doctrine_Core::getTable($object_class)->findOneBy('id', $object_id);
 		
 		$tags = $request->getParameter('tags');
 		
@@ -137,7 +137,7 @@ class taggableCompleteActions extends sfActions
 		
 		$this->forward404unless($object_id && $object_class);
 		
-		$object = Doctrine::getTable($object_class)->findOneBy('id', $object_id);
+		$object = Doctrine_Core::getTable($object_class)->findOneBy('id', $object_id);
 		
 		$tags = $request->getParameter('tags');
 		
