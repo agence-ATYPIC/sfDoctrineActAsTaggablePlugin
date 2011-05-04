@@ -43,8 +43,8 @@ function pkInlineTaggableWidget(selector, options)
 			var new_link = $('<a />');
 			new_tag.attr({ title: title }).addClass('a-tag a-popular');
 			new_tag.prepend(new_link);
-			new_link.html(title + "<span class='a-tag-count'>"+text+"</span>");
-			new_link.attr(attributes).addClass('a-link');
+			new_link.html(title + "<span class='a-tag-count icon'>"+text+"</span>");
+			new_link.attr(attributes).addClass('a-link icon icon-right no-icon');
 			return new_tag;
 		}
 
@@ -60,17 +60,17 @@ function pkInlineTaggableWidget(selector, options)
 			{
 				if (typeof(allTags[title]) != 'undefined')
 				{
-					title = title + '<span class="a-tag-count">' + allTags[title] + '</span>';
+					title = title + '<span class="a-tag-count icon">' + allTags[title] + '</span>';
 				}
 				else
 				{
-					title = title + '<span class="a-tag-count">0</span>';
+					title = title + '<span class="a-tag-count icon">0</span>';
 				}
 			}
 
 			new_link.text(tagTitle);
 			new_link.attr(attributes);
-			new_link.attr({ title: 'Remove Tag' }).addClass('a-link icon a-close-small');
+			new_link.attr({ title: 'Remove Tag' }).addClass('a-link icon icon-right a-close-small alt');
 			new_link.prepend('<span class="icon"></span>');
 			new_tag.attr({ title: tagTitle }).addClass('a-tag a-existing');
 			new_tag.append(new_link);
