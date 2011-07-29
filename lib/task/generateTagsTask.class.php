@@ -15,6 +15,7 @@ class generateTagsTask extends sfBaseTask
       new sfCommandOption('connection', null, sfCommandOption::PARAMETER_REQUIRED, 'The connection name', 'doctrine'),
       // add your own options here
       new sfCommandOption('n', null, sfCommandOption::PARAMETER_REQUIRED, 'The number of tags to generate', 10),
+      new sfCommandOption('tags-per-model', null, sfCommandOption::PARAMETER_REQUIRED, 'The number of tags to generate per model', 1),
       new sfCommandOption('models', null, sfCommandOption::PARAMETER_OPTIONAL, 'The models to tag'),
     ));
 
@@ -22,7 +23,10 @@ class generateTagsTask extends sfBaseTask
     $this->name             = 'tags';
     $this->briefDescription = '';
     $this->detailedDescription = <<<EOF
-The [generate:tags|INFO] task does things.
+The [generate:tags|INFO] task creates a number of random tags and applies them to the specified models.
+
+If you wish to tag aBlogItems or aEvents please use the task apostrophe:generate-blog-tags
+
 Call it with:
 
   [php symfony generate:tags|INFO]
@@ -52,7 +56,16 @@ EOF;
 
           foreach($models as $model)
           {
-            $model->addTag($tags[rand(0, $n - 1)]);
+            $modelTags = array();
+
+            while (count($modelTags) < $options['tags-per-model'])
+            {
+              $tag = $tags[rand(0, $n - 1)];
+              $modelTags[$tag] = $tag;
+            }
+            $modelTags = array_values($modelTags);
+
+            $model->addTag($modelTags);
             $model->save();
           }
         }
@@ -77,6 +90,13 @@ EOF;
     }
 
     $tags = array_values($tags);
+
+    foreach($tags as $tag)
+    {
+      $t = new Tag();
+      $t->name = $tag;
+      $t->save();
+    }
 
     return $tags;
   }
