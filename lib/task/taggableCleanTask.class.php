@@ -19,7 +19,7 @@ class taggableCleanTask extends sfBaseTask
 
     $this->namespace        = 'taggable';
     $this->name             = 'clean';
-    $this->briefDescription = 'deletes orphaned/unused Tag objects';
+    $this->briefDescription = 'deletes orphaned/unused/redundant Tag objects';
     $this->detailedDescription = <<<EOF
 The [taggable:clean|INFO] task {$this->briefDescription}.
 Call it with:
@@ -35,10 +35,12 @@ EOF;
     $connection = $databaseManager->getDatabase($options['connection'] ? $options['connection'] : null)->getConnection();
 
     $deleted = PluginTagTable::purgeOrphans();
+    $redundant = PluginTagTable::purgeRedundantTaggings();
     if ($options['verbose'])
     {
       $count = count($deleted);
       echo "deleted $count orphan tags.\n";      
+      echo "deleted $redundant redundant taggings.\n";      
     }
   }
 }

@@ -535,6 +535,16 @@ class PluginTagTable extends Doctrine_Table
     }
 
     /**
+     * Remove redundant taggings
+     */
+    public static function purgeRedundantTaggings()
+    {
+      // Doctrine makes a mangled mess of my subqueries here, so talk to PDO
+      $pdo = Doctrine_Manager::connection()->getDbh();
+      return $pdo->exec("delete from tagging where id not in (select * from (select min(tagging.id) from tagging inner join tag on tagging.tag_id = tag.id group by concat(tag.id, ':', tagging.taggable_id, ':', tagging.taggable_model)) as redundant);");
+    }
+
+    /**
      * Retrieves tags with the number of taggings for a given set of models, can be accessed using ->$model
      *
      * @param Array $models
