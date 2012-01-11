@@ -6,6 +6,7 @@ function pkInlineTaggableWidget(selector, options)
 {	
 	$(selector).each(function()
 	{	
+	  var enhancedElement = $(this);
 		// Semi-global
 		var typeaheadUrl = options['typeahead-url'];
 		var tagsLabel = (options['tags-label']) ? options['tags-label'] : 'Existing Tags';
@@ -37,6 +38,11 @@ function pkInlineTaggableWidget(selector, options)
 			}
 		}
 
+    function change()
+    {
+      enhancedElement.change();
+    }
+    
 		function makePopularLink(attributes, title, text)
 		{
 			var new_tag = $('<span />');
@@ -106,6 +112,7 @@ function pkInlineTaggableWidget(selector, options)
 			// add placeholder to get the comma-and-space at the end
 			terms.push( "" );
 			this.value = terms.join( ", " );
+			change();
 			return false;
 		}
 		
@@ -146,6 +153,9 @@ function pkInlineTaggableWidget(selector, options)
 		var typeAheadBoxId = 'inline-tag-ahead-box-' + Math.floor(Math.random() * 2000);
 		typeAheadBox.attr('type', 'text');
 		typeAheadBox.attr('id', typeAheadBoxId);
+		typeAheadBox.change(function() {
+		  change();
+		});
 		if ((typeof(allTags) == 'undefined') && (typeof(typeaheadUrl) != 'undefined'))
 		{
 			typeAheadBox.autocomplete({ 
@@ -201,7 +211,7 @@ function pkInlineTaggableWidget(selector, options)
 			link.remove();
 
 			var new_link = makeRemoveLink(existingTagsAttributes, tag, tag + ' x');
-			new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); return false; });
+			new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); change(); return false; });
 			existingDiv.append(new_link);
 			existingDiv.children('h4').show();
 		}
@@ -225,7 +235,7 @@ function pkInlineTaggableWidget(selector, options)
 			{
 				var linkLabel = popularTags[tag];
 				var new_link = makePopularLink(existingTagsAttributes, tag, linkLabel);
-				new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); return false; });
+				new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); change(); return false; });
 				popularsDiv.children('h4').show();
 				popularsDiv.append(new_link);
 			}
@@ -256,14 +266,14 @@ function pkInlineTaggableWidget(selector, options)
 					tagContainer.addClass(addLinkClass);
 					linkLabel = tagArray[x];
 					var new_link = makePopularLink(linkAttributes, x, linkLabel);
-					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); return false; });
+					new_link.children('a').bind('click', function() { addTagsToForm($(this).parent()); change(); return false; });
 				}
 				else if (linkLabelType == 'remove')
 				{
 					tagContainer.addClass(removeLinkClass);
 					linkLabel = 'x ' + x;
 					var new_link = makeRemoveLink(linkAttributes, x, linkLabel);
-					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); return false; });
+					new_link.children('a').bind('click', function() { removeTagsFromForm($(this).parent()); change(); return false; });
 				}				
 				tagContainer.append(new_link);
 			}
@@ -274,6 +284,7 @@ function pkInlineTaggableWidget(selector, options)
 		// If the user doesn't click Save changes or add... tough?
 		function commitTagsToForm()
 		{	
+		  
 			if (typeAheadBox.val() != '')
 			{
 				var value = tagInput.val() + ',' + typeAheadBox.val();
@@ -292,17 +303,19 @@ function pkInlineTaggableWidget(selector, options)
 				existingDiv.find('a').each(function() {
 					$(this).bind('click', function() {
 						removeTagsFromForm($(this).parent());
+						change();
 						return false;
 					});
 				});
 			}
 			return false;
 		}
-		addButton.bind('click', function() { commitTagsToForm(); return false; });
+		addButton.bind('click', function() { commitTagsToForm(); change(); return false; });
 		if (commitSelector != 'undefined')
 		{
 			$(commitSelector).bind(commitEvent, function() {
 				commitTagsToForm();
+				change();
 				return true;
 			});
 		}
@@ -312,7 +325,7 @@ function pkInlineTaggableWidget(selector, options)
 		tagInput.parent().prepend(existingDiv);
 		
 		popularsDiv = makeTagContainer(popularTagsLabel, unusedPopulars, popularsAttributes, 'add');
-		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this));  return false; });
+		popularsDiv.children('a').bind('click', function() { addTagsToForm($(this)); change(); return false; });
 		tagInput.parent().append(popularsDiv);
 			
 		// Catch that enter key, baby!
